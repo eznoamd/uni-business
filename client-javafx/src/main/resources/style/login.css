@@ -4,7 +4,7 @@
 
 .left-panel {
     -fx-pref-width: 500;
-    -fx-background-color: #f9fafb;
+    -fx-background-color: #f4f4f4;
 }
 
 .right-panel {
@@ -46,7 +46,7 @@
 
     -fx-pref-height: 50;
 
-    -fx-background-color: #f9fafb;
+    -fx-background-color: #f4f4f4;
 
     -fx-background-radius: 8;
 
@@ -60,7 +60,7 @@
 
 .input:focused {
 
-    -fx-border-color: #149eff;
+    -fx-border-color: #05AD98;
 
 }
 

@@ -33,6 +33,7 @@
     -fx-max-width: Infinity;
     -fx-padding: 14 16 14 16;
     -fx-background-radius: 12;
+    -fx-graphic-text-gap: 12;
 }
 
 .sidebar-item:hover {
@@ -133,4 +134,10 @@
     -fx-text-fill: #111827;
     -fx-font-size: 24;
     -fx-font-weight: bold;
+}
+
+.ikonli-font-icon {
+    -fx-icon-size: 16;
+    -fx-icon-color: white;
+    
 }

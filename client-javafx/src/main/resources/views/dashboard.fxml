@@ -3,11 +3,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            prefWidth="1280"
-            prefHeight="720"
-            stylesheets="@../style/sidebar.css">
+<BorderPane 
+    fx:id="mainLayout"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="com.unibusiness.controller.DashboardController"
+    prefWidth="1280"
+    prefHeight="720"
+    stylesheets="@../style/sidebar.css">
 
     <left>
         <VBox spacing="16" styleClass="sidebar">
@@ -18,28 +22,68 @@
                     <VBox spacing="10" styleClass="sidebar-section">
                         <Label text="Minhas abas" styleClass="section-title"/>
                         <VBox spacing="8" styleClass="section-items">
-                            <Button text="Dashboard" styleClass="sidebar-item"/>
-                            <Button text="Tarefas" styleClass="sidebar-item"/>
-                            <Button text="Chat" styleClass="sidebar-item"/>
+                            <Button text="Home" styleClass="sidebar-item" onAction="#switchToHome">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-home" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Tarefas" styleClass="sidebar-item" onAction="#switchToMinhasTarefas">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-tasks" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Chat" styleClass="sidebar-item" onAction="#switchToChat">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-comments" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
                         </VBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="sidebar-section">
                         <Label text="Geral" styleClass="section-title"/>
                         <VBox spacing="8" styleClass="section-items">
-                            <Button text="Estoque" styleClass="sidebar-item"/>
-                            <Button text="Financeiro" styleClass="sidebar-item"/>
-                            <Button text="Clientes" styleClass="sidebar-item"/>
-                            <Button text="Fornecedores" styleClass="sidebar-item"/>
+                            <Button text="Estoque" styleClass="sidebar-item" onAction="#switchToEstoque">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-box" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Financeiro" styleClass="sidebar-item" onAction="#switchToFinanceiro">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-chart-line" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Clientes" styleClass="sidebar-item" onAction="#switchToClientes">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-users" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Fornecedores" styleClass="sidebar-item" onAction="#switchToFornecedores">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-truck" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
                         </VBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="sidebar-section">
                         <Label text="Administração" styleClass="section-title"/>
                         <VBox spacing="8" styleClass="section-items">
-                            <Button text="Funcionários" styleClass="sidebar-item"/>
-                            <Button text="Tarefas" styleClass="sidebar-item"/>
-                            <Button text="Equipes" styleClass="sidebar-item"/>
+                            <Button text="Funcionários" styleClass="sidebar-item" onAction="#switchToFuncionarios">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-user-friends" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Tarefas" styleClass="sidebar-item" onAction="#switchToTarefas">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-tasks" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Equipes" styleClass="sidebar-item" onAction="#switchToEquipes">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-users" styleClass="sidebar-icon"/>
+                                </graphic>
+                            </Button>
                         </VBox>
                     </VBox>
                 </VBox>
@@ -50,7 +94,7 @@
                     <Label text="JS" styleClass="profile-initial"/>
                 </StackPane>
                 <VBox spacing="4">
-                    <Label text="João Silva" styleClass="profile-name"/>
+                    <Label text="Enzo Augusto" styleClass="profile-name"/>
                     <Label text="Gerente" styleClass="profile-role"/>
                 </VBox>
             </HBox>
@@ -58,9 +102,7 @@
     </left>
 
     <center>
-        <StackPane styleClass="content-area">
-            <Label text="Bem-vindo ao painel" styleClass="content-placeholder"/>
-        </StackPane>
+        <StackPane styleClass="content-area" fx:id="contentArea"/>
     </center>
 
 </BorderPane>
