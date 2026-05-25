@@ -33,10 +33,10 @@ public class LoginController {
 
         if (conta.equals("teste") && senha.equals("1234")) {
             System.out.println("Login bem-sucedido!");
-            ViewManager.switchPrimaryTo("/views/teste.fxml");
+            ViewManager.switchPrimaryTo("/views/dashboard.fxml");
             return;
-        }   
-        
+        }
+
         // Feedback para login inválido
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro de Login");

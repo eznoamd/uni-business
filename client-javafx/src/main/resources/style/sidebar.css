@@ -1,0 +1,136 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar {
+    -fx-background-color: #111827;
+    -fx-padding: 24;
+    -fx-pref-width: 320;
+    -fx-fill-width: true;
+}
+
+.sidebar-section {
+    -fx-spacing: 12;
+}
+
+.section-title {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.1em;
+    -fx-text-transform: uppercase;
+}
+
+.section-items {
+    -fx-spacing: 8;
+}
+
+.sidebar-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f8fafc;
+    -fx-font-size: 14;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
+    -fx-padding: 14 16 14 16;
+    -fx-background-radius: 12;
+}
+
+.sidebar-item:hover {
+    -fx-background-color: rgba(255,255,255,0.08);
+}
+
+.sidebar-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.sidebar-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.sidebar-scroll .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.sidebar-scroll .scroll-bar:vertical .increment-button,
+.sidebar-scroll .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+    -fx-font-size: 0;
+}
+
+.sidebar-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #111827;
+    -fx-min-width: 8;
+    -fx-background-radius: 0;
+}
+
+.sidebar-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(255,255,255,0.20);
+}
+
+.logo-placeholder {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-min-height: 80;
+    -fx-pref-height: 80;
+    -fx-max-height: 80;
+    -fx-alignment: center;
+}
+
+.sidebar-scroll-content {
+    -fx-padding: 4 0 4 0;
+}
+
+.profile-card {
+    -fx-background-color: #0f172a;
+    -fx-border-color: rgba(255,255,255,0.12);
+    -fx-border-width: 1;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+}
+
+.profile-photo {
+    -fx-background-color: #2563eb;
+    -fx-background-radius: 999;
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+    -fx-alignment: center;
+}
+
+.profile-initial {
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.profile-name {
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+
+.profile-role {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12;
+}
+
+.content-area {
+    -fx-background-color: #f8fafc;
+    -fx-padding: 32;
+}
+
+.content-placeholder {
+    -fx-text-fill: #111827;
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+}

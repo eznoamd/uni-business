@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            prefWidth="1280"
+            prefHeight="720"
+            stylesheets="@../style/sidebar.css">
+
+    <left>
+        <VBox spacing="16" styleClass="sidebar">
+            <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="24" styleClass="sidebar-scroll-content">
+                    <VBox styleClass="logo-placeholder"/>
+
+                    <VBox spacing="10" styleClass="sidebar-section">
+                        <Label text="Minhas abas" styleClass="section-title"/>
+                        <VBox spacing="8" styleClass="section-items">
+                            <Button text="Dashboard" styleClass="sidebar-item"/>
+                            <Button text="Tarefas" styleClass="sidebar-item"/>
+                            <Button text="Chat" styleClass="sidebar-item"/>
+                        </VBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="sidebar-section">
+                        <Label text="Geral" styleClass="section-title"/>
+                        <VBox spacing="8" styleClass="section-items">
+                            <Button text="Estoque" styleClass="sidebar-item"/>
+                            <Button text="Financeiro" styleClass="sidebar-item"/>
+                            <Button text="Clientes" styleClass="sidebar-item"/>
+                            <Button text="Fornecedores" styleClass="sidebar-item"/>
+                        </VBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="sidebar-section">
+                        <Label text="Administração" styleClass="section-title"/>
+                        <VBox spacing="8" styleClass="section-items">
+                            <Button text="Funcionários" styleClass="sidebar-item"/>
+                            <Button text="Tarefas" styleClass="sidebar-item"/>
+                            <Button text="Equipes" styleClass="sidebar-item"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <HBox spacing="14" styleClass="profile-card" alignment="CENTER_LEFT">
+                <StackPane styleClass="profile-photo">
+                    <Label text="JS" styleClass="profile-initial"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="João Silva" styleClass="profile-name"/>
+                    <Label text="Gerente" styleClass="profile-role"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane styleClass="content-area">
+            <Label text="Bem-vindo ao painel" styleClass="content-placeholder"/>
+        </StackPane>
+    </center>
+
+</BorderPane>
