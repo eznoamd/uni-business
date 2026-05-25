@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane
+        xmlns:fx="http://javafx.com/fxml"
+        prefWidth="1280"
+        prefHeight="720">
+
+    <VBox
+            alignment="CENTER"
+            spacing="20"
+            styleClass="right-panel">
+
+        <Label
+                text="Teste"
+                styleClass="title"/>
+    </VBox>
+</StackPane>

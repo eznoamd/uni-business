@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<StackPane
+        xmlns:fx="http://javafx.com/fxml"
+        prefWidth="1280"
+        prefHeight="720"
+        stylesheets="@../style/login.css"
+        fx:controller="com.unibusiness.controller.LoginController">
+
+    <HBox styleClass="login-card">
+
+
+        <StackPane styleClass="left-panel">
+
+            <ImageView
+                    fitWidth="300"
+                    preserveRatio="true">
+
+                <image>
+                    <Image url="@../assets/login.png"/>
+                </image>
+
+            </ImageView>
+
+        </StackPane>
+
+        <VBox
+                alignment="CENTER"
+                spacing="20"
+                styleClass="right-panel">
+
+            <Label
+                    text="Login"
+                    styleClass="title"/>
+
+            <VBox spacing="8">
+
+                <Label text="Conta"/>
+
+                <TextField
+                        fx:id="contaField"
+                        promptText="Digite sua conta"
+                        styleClass="input"/>
+
+            </VBox>
+
+            <VBox spacing="8">
+
+                <Label text="Senha"/>
+
+                <PasswordField
+                        fx:id="senhaField"
+                        promptText="Digite sua senha"
+                        styleClass="input"/>
+
+            </VBox>
+
+            <Button
+                    text="Entrar"
+                    onAction="#login"
+                    styleClass="login-button"/>
+
+        </VBox>
+
+    </HBox>
+
+</StackPane>
