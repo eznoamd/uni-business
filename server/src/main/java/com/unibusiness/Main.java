@@ -15,6 +15,7 @@ public class Main {
         int maxClients = Integer.parseInt(System.getenv().getOrDefault("MAX_CLIENTS", "100"));
 
         PersistenceManager.getEntityManagerFactory();
+        com.unibusiness.config.DatabasePopulate.run();
 
         TcpServer server = new TcpServer(port, maxClients);
 
