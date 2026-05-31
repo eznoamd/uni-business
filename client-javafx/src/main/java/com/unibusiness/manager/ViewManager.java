@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 
 public class ViewManager {
 
@@ -20,6 +22,8 @@ public class ViewManager {
     private static final Map<String, Object> controllerCache = new HashMap<>();
     
     private static Consumer<String> onViewChangeListener;
+
+    private static boolean firstStage = true;
 
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
@@ -96,6 +100,17 @@ public class ViewManager {
             Scene scene = new Scene((Parent) view);
             stage.setScene(scene);
             stage.show();
+            if (firstStage) {
+                Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+
+                stage.setX(bounds.getMinX());
+                stage.setY(bounds.getMinY());
+                stage.setWidth(bounds.getWidth());
+                stage.setHeight(bounds.getHeight());
+                stage.setMaximized(true);
+                
+                firstStage = false;
+            }
             notifyViewChange(fxmlPath);
         } catch (IOException e) {
             handleError("Erro ao carregar cena: " + fxmlPath, e);

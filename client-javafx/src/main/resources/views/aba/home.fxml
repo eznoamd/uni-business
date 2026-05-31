@@ -3,12 +3,99 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane 
-    xmlns:fx="http://javafx.com/fxml"
-    prefWidth="1280"
-    prefHeight="720">
+<BorderPane
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.unibusiness.controller.HomeController"
+        stylesheets="@../../style/abas/home.css">
 
     <center>
-        <Label text="Home" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <ScrollPane
+                fitToWidth="true"
+                hbarPolicy="NEVER"
+                styleClass="scroll">
+
+            <content>
+                <VBox
+                        spacing="20"
+                        styleClass="content">
+
+                    <Label text="Home" styleClass="page-title"/>
+
+                    <VBox
+                        spacing="15"
+                        styleClass="section">
+
+                        <Label
+                                text="Ponto do dia"
+                                styleClass="section-title"/>
+
+                        <GridPane
+                                hgap="15"
+                                vgap="15">
+
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="5"
+                                GridPane.columnIndex="0">
+                                <Label
+                                        text="Hora de Entrada"
+                                        styleClass="field-label"/>
+
+                                <TextField
+                                        fx:id="entradaField"
+                                        promptText="08:00"
+                                        styleClass="input"/>
+                            </VBox>
+
+                            <VBox spacing="5"
+                                GridPane.columnIndex="1">
+                                <Label
+                                        text="Hora de Saída"
+                                        styleClass="field-label"/>
+
+                                <TextField
+                                        fx:id="saidaField"
+                                        promptText="18:00"
+                                        styleClass="input"/>
+                            </VBox>
+
+                            <VBox spacing="5"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="1"
+                                GridPane.columnSpan="2">
+
+                                <Label
+                                        text="Observações"
+                                        styleClass="field-label"/>
+
+                                <TextArea
+                                        fx:id="observacoesField"
+                                        promptText="Digite observações sobre o expediente..."
+                                        prefRowCount="6"
+                                        wrapText="true"
+                                        styleClass="textarea"/>
+                            </VBox>
+
+                            <HBox
+                                alignment="CENTER_RIGHT"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="2"
+                                GridPane.columnSpan="2">
+                                <Button     
+                                    text="Registrar Ponto"
+                                    styleClass="btn-success"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="2"
+                                    GridPane.columnSpan="2"/>
+                            </HBox>
+                        </GridPane>
+                    </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
+
 </BorderPane>

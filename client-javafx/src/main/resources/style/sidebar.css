@@ -1,6 +1,14 @@
+/* ==========================================================
+   Aplicação
+   ========================================================== */
+
 .root {
     -fx-font-family: "Segoe UI", sans-serif;
 }
+
+/* ==========================================================
+   Sidebar
+   ========================================================== */
 
 .sidebar {
     -fx-background-color: #111827;
@@ -13,7 +21,7 @@
     -fx-spacing: 12;
 }
 
-.section-title {
+.sidebar-section-title {
     -fx-text-fill: #94a3b8;
     -fx-font-size: 12;
     -fx-font-weight: bold;
@@ -21,7 +29,7 @@
     -fx-text-transform: uppercase;
 }
 
-.section-items {
+.sidebar-section-items {
     -fx-spacing: 8;
 }
 
@@ -39,6 +47,10 @@
 .sidebar-item:hover {
     -fx-background-color: rgba(255,255,255,0.08);
 }
+
+/* ==========================================================
+   Sidebar - Scroll
+   ========================================================== */
 
 .sidebar-scroll {
     -fx-background-color: transparent;
@@ -75,6 +87,14 @@
     -fx-background-color: rgba(255,255,255,0.20);
 }
 
+.sidebar-scroll-content {
+    -fx-padding: 4 0 4 0;
+}
+
+/* ==========================================================
+   Sidebar - Perfil
+   ========================================================== */
+
 .logo-placeholder {
     -fx-background-color: rgba(255,255,255,0.08);
     -fx-border-radius: 12;
@@ -83,10 +103,6 @@
     -fx-pref-height: 80;
     -fx-max-height: 80;
     -fx-alignment: center;
-}
-
-.sidebar-scroll-content {
-    -fx-padding: 4 0 4 0;
 }
 
 .profile-card {
@@ -125,9 +141,26 @@
     -fx-font-size: 12;
 }
 
+/* ==========================================================
+   Ícones
+   ========================================================== */
+
+.ikonli-font-icon {
+    -fx-icon-size: 16;
+    -fx-icon-color: white;
+}
+
+/* ==========================================================
+   Área Principal
+   ========================================================== */
+
 .content-area {
     -fx-background-color: #f8fafc;
     -fx-padding: 32;
+}
+
+.content {
+    -fx-padding: 30;
 }
 
 .content-placeholder {
@@ -136,8 +169,194 @@
     -fx-font-weight: bold;
 }
 
-.ikonli-font-icon {
-    -fx-icon-size: 16;
-    -fx-icon-color: white;
-    
+/* ==========================================================
+   Títulos
+   ========================================================== */
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2442;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2442;
+}
+
+.field-label {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6b7280;
+}
+
+/* ==========================================================
+   Cards / Seções
+   ========================================================== */
+
+.section {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 25;
+
+    -fx-effect:
+        dropshadow(
+            gaussian,
+            rgba(0,0,0,.08),
+            15,
+            0,
+            0,
+            4
+        );
+}
+
+/* ==========================================================
+   Botões
+   ========================================================== */
+
+.btn-success {
+    -fx-pref-height: 40;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 16 8 16;
+    -fx-background-color: #05AD98;
+    -fx-text-fill: white;
+}
+
+.btn-success:hover {
+    -fx-background-color: #06a592;
+}
+
+.btn-success:pressed{
+    -fx-background-color: #048f7e;
+}
+
+.btn-primary {
+    -fx-pref-height: 40;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 16 8 16;
+    -fx-background-color: #3f3d56;
+    -fx-text-fill: white;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #3a3856;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #32304e;
+}
+
+
+/* ==========================================================
+   Inputs
+   ========================================================== */
+
+.input {
+    -fx-pref-height: 50;
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-font-size: 14;
+    -fx-padding: 0 15 0 15;
+
+    -fx-effect:
+        dropshadow(
+            gaussian,
+            rgba(0,0,0,0.12),
+            8,
+            0,
+            0,
+            2
+        );
+}
+
+.input:focused {
+    -fx-border-color: #05AD98;
+    -fx-border-width: 2;
+}
+
+/* ==========================================================
+   TextArea
+   ========================================================== */
+
+.textarea {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-font-size: 14;
+
+    -fx-effect:
+        dropshadow(
+            gaussian,
+            rgba(0,0,0,0.12),
+            8,
+            0,
+            0,
+            2
+        );
+}
+
+.textarea .content {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 8;
+}
+
+.textarea:focused {
+    -fx-border-color: #05AD98;
+    -fx-border-width: 2;
+}
+
+/* ==========================================================
+   ScrollPane
+   ========================================================== */
+
+.scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ==========================================================
+   ScrollBar
+   ========================================================== */
+
+.scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 999;
+}
+
+.scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.scroll .scroll-bar .increment-button,
+.scroll .scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+
+.scroll .scroll-bar .increment-arrow,
+.scroll .scroll-bar .decrement-arrow {
+    -fx-opacity: 0;
 }

@@ -6,8 +6,6 @@
 
 <StackPane
         xmlns:fx="http://javafx.com/fxml"
-        prefWidth="1280"
-        prefHeight="720"
         stylesheets="@../style/login.css"
         fx:controller="com.unibusiness.controller.LoginController">
 
@@ -60,6 +58,7 @@
             </VBox>
 
             <Button
+                    fx:id="loginButton"
                     text="Entrar"
                     onAction="#login"
                     styleClass="login-button"/>

@@ -20,7 +20,7 @@
                     <VBox styleClass="logo-placeholder"/>
 
                     <VBox spacing="10" styleClass="sidebar-section">
-                        <Label text="Minhas abas" styleClass="section-title"/>
+                        <Label text="Minhas abas" styleClass="sidebar-section-title"/>
                         <VBox spacing="8" styleClass="section-items">
                             <Button text="Home" styleClass="sidebar-item" onAction="#switchToHome">
                                 <graphic>
@@ -41,8 +41,8 @@
                     </VBox>
 
                     <VBox spacing="10" styleClass="sidebar-section">
-                        <Label text="Geral" styleClass="section-title"/>
-                        <VBox spacing="8" styleClass="section-items">
+                        <Label text="Geral" styleClass="sidebar-section-title"/>
+                        <VBox spacing="8" styleClass="sidebar-section-items">
                             <Button text="Estoque" styleClass="sidebar-item" onAction="#switchToEstoque">
                                 <graphic>
                                     <FontIcon iconLiteral="fas-box" styleClass="sidebar-icon"/>
@@ -67,8 +67,8 @@
                     </VBox>
 
                     <VBox spacing="10" styleClass="sidebar-section">
-                        <Label text="Administração" styleClass="section-title"/>
-                        <VBox spacing="8" styleClass="section-items">
+                        <Label text="Administração" styleClass="sidebar-section-title"/>
+                        <VBox spacing="8" styleClass="sidebar-section-items">
                             <Button text="Funcionários" styleClass="sidebar-item" onAction="#switchToFuncionarios">
                                 <graphic>
                                     <FontIcon iconLiteral="fas-user-friends" styleClass="sidebar-icon"/>
@@ -98,7 +98,7 @@
                     <Label text="Gerente" styleClass="profile-role"/>
                 </VBox>
             </HBox>
-        </VBox>
+        </VBox> 
     </left>
 
     <center>

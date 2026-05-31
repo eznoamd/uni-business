@@ -41,20 +41,22 @@
 }
 
 .input {
-
     -fx-pref-width: 350;
-
     -fx-pref-height: 50;
-
     -fx-background-color: #f4f4f4;
-
     -fx-background-radius: 8;
-
     -fx-border-radius: 3;
-
     -fx-border-color: transparent;
-
     -fx-font-size: 15;
+    -fx-effect:
+        dropshadow(
+            gaussian,
+            rgba(0,0,0,0.12),
+            8,
+            0,
+            0,
+            2
+        );
 
 }
 

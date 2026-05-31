@@ -23,7 +23,7 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-
+        loginButton.setDefaultButton(true);
     }
 
     @FXML
