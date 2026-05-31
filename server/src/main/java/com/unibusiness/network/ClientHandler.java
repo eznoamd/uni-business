@@ -13,6 +13,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Thread dedicada a um único cliente TCP.
+ *
+ * FIX: A lógica de "isLoginOk / não reenviar" foi removida. O AuthHandler
+ * não mais chama session.send() diretamente; toda resposta passa por
+ * sendRaw() aqui, garantindo um único ponto de envio.
+ */
 public class ClientHandler implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(ClientHandler.class.getName());
@@ -22,7 +29,6 @@ public class ClientHandler implements Runnable {
     private final SessionStore      sessions = SessionStore.getInstance();
 
     private ClientSession session;
-
     private ClientSession tempSession;
 
     public ClientHandler(Socket socket, RequestDispatcher dispatcher) {
@@ -55,11 +61,15 @@ public class ClientHandler implements Runnable {
                 }
 
                 ClientSession sessionParaDispatch = resolveSession(request);
-
                 Response response = dispatcher.dispatch(request, sessionParaDispatch);
+
+                // FIX: envia a resposta normalmente em todos os casos.
+                // Após o envio, se for um login bem-sucedido, atualiza a referência
+                // de sessão local para que requisições seguintes usem a sessão autenticada.
                 sendRaw(writer, response);
 
-                if (Actions.LOGIN.equals(request.getAction()) && "OK".equals(response.getStatus())) {
+                if (Actions.LOGIN.equals(request.getAction())
+                        && Response.OK.equals(response.getStatus())) {
                     extractAndSetSession(response);
                 }
             }
@@ -106,6 +116,7 @@ public class ClientHandler implements Runnable {
         if (session != null && session.getToken() != null) {
             sessions.remove(session.getToken());
         }
+        // FIX: garante fechamento do socket mesmo quando o login nunca ocorreu
         try { socket.close(); } catch (IOException ignored) {}
     }
 }

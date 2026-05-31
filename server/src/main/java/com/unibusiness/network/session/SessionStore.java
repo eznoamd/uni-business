@@ -11,14 +11,14 @@ public final class SessionStore {
 
     private static final SessionStore INSTANCE = new SessionStore();
 
-    private final Map<String, ClientSession> byToken   = new ConcurrentHashMap<>();
+    private final Map<String, ClientSession>  byToken   = new ConcurrentHashMap<>();
     private final Map<Integer, ClientSession> byUsuario = new ConcurrentHashMap<>();
 
     private SessionStore() {}
 
     public static SessionStore getInstance() { return INSTANCE; }
 
-    public String register(ClientSession session) {
+    public synchronized String register(ClientSession session) {
         String token = UUID.randomUUID().toString();
         session.setToken(token);
         byToken.put(token, session);
@@ -26,9 +26,9 @@ public final class SessionStore {
         return token;
     }
 
-    public void remove(String token) {
+    public synchronized void remove(String token) {
         ClientSession session = byToken.remove(token);
-        if (session != null) {
+        if (session != null && session.getUsuario() != null) {
             byUsuario.remove(session.getUsuario().getId());
         }
     }

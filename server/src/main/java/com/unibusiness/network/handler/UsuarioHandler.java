@@ -7,6 +7,7 @@ import com.unibusiness.protocol.request.Request;
 import com.unibusiness.protocol.response.Response;
 import com.unibusiness.service.UsuarioService;
 import com.unibusiness.service.impl.UsuarioServiceImpl;
+import com.unibusiness.util.PasswordUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,9 @@ public class UsuarioHandler implements ActionHandler {
         if (nome == null || email == null || senha == null)
             return Response.error(Actions.USUARIO_CREATE, "Campos 'nome', 'email' e 'senha' obrigatórios.");
 
-        // NOTA: substituir por BCrypt.hashpw(senha, BCrypt.gensalt()) em produção
-        UsuarioEntity saved = service.create(new UsuarioEntity(nome, email, senha));
+        // FIX (segurança): senha é hasheada antes de persistir
+        String senhaHash = PasswordUtil.hashPassword(senha);
+        UsuarioEntity saved = service.create(new UsuarioEntity(nome, email, senhaHash));
         return Response.ok(Actions.USUARIO_CREATE, toMap(saved));
     }
 
@@ -62,9 +64,9 @@ public class UsuarioHandler implements ActionHandler {
         return service.findById(id).map(u -> {
             if (req.getString("nome")  != null) u.setNome(req.getString("nome"));
             if (req.getString("email") != null) u.setEmail(req.getString("email"));
-            if (req.getString("senha") != null) u.setSenhaHash(req.getString("senha"));
+            if (req.getString("senha") != null) u.setSenhaHash(PasswordUtil.hashPassword(req.getString("senha")));
             if (req.get("ativo")       != null) u.setAtivo(Boolean.parseBoolean(req.getString("ativo")));
-            return Response.ok(Actions.USUARIO_UPDATE, toMap(service.create(u)));
+            return Response.ok(Actions.USUARIO_UPDATE, toMap(service.update(u)));
         }).orElse(Response.error(Actions.USUARIO_UPDATE, "Usuário não encontrado."));
     }
 
@@ -73,10 +75,8 @@ public class UsuarioHandler implements ActionHandler {
         if (id == null) return Response.error(Actions.USUARIO_DELETE, "Campo 'id' obrigatório.");
 
         return service.findById(id).map(u -> {
-            // UsuarioService não tem delete — delegamos ao findById e removemos via create(merge)
-            // Adicione um método delete() em UsuarioService se necessário
             u.setAtivo(false);
-            service.create(u); // desativa em vez de deletar para preservar histórico
+            service.update(u);
             return Response.ok(Actions.USUARIO_DELETE, "Usuário desativado.", null);
         }).orElse(Response.error(Actions.USUARIO_DELETE, "Usuário não encontrado."));
     }

@@ -26,90 +26,80 @@ public class RequestDispatcher {
     }
 
     private void registerHandlers() {
-        // Auth
         handlers.put(Actions.LOGIN,  new AuthHandler());
         handlers.put(Actions.LOGOUT, new AuthHandler());
 
-        // Usuário
         UsuarioHandler uh = new UsuarioHandler();
-        handlers.put(Actions.USUARIO_CREATE,         uh);
-        handlers.put(Actions.USUARIO_LIST,           uh);
-        handlers.put(Actions.USUARIO_GET,            uh);
-        handlers.put(Actions.USUARIO_UPDATE,         uh);
-        handlers.put(Actions.USUARIO_DELETE,         uh);
+        handlers.put(Actions.USUARIO_CREATE,          uh);
+        handlers.put(Actions.USUARIO_LIST,            uh);
+        handlers.put(Actions.USUARIO_GET,             uh);
+        handlers.put(Actions.USUARIO_UPDATE,          uh);
+        handlers.put(Actions.USUARIO_DELETE,          uh);
 
-        // Produto / Estoque
         ProdutoHandler ph = new ProdutoHandler();
-        handlers.put(Actions.PRODUTO_CREATE,         ph);
-        handlers.put(Actions.PRODUTO_LIST,           ph);
-        handlers.put(Actions.PRODUTO_GET,            ph);
-        handlers.put(Actions.PRODUTO_UPDATE,         ph);
-        handlers.put(Actions.PRODUTO_DELETE,         ph);
-        handlers.put(Actions.ESTOQUE_MOVIMENTAR,     ph);
-        handlers.put(Actions.ESTOQUE_MOVIMENTACOES,  ph);
+        handlers.put(Actions.PRODUTO_CREATE,          ph);
+        handlers.put(Actions.PRODUTO_LIST,            ph);
+        handlers.put(Actions.PRODUTO_GET,             ph);
+        handlers.put(Actions.PRODUTO_UPDATE,          ph);
+        handlers.put(Actions.PRODUTO_DELETE,          ph);
+        handlers.put(Actions.ESTOQUE_MOVIMENTAR,      ph);
+        handlers.put(Actions.ESTOQUE_MOVIMENTACOES,   ph);
 
-        // Caixa
         CaixaHandler ch = new CaixaHandler();
-        handlers.put(Actions.CAIXA_ABRIR,            ch);
-        handlers.put(Actions.CAIXA_FECHAR,           ch);
-        handlers.put(Actions.CAIXA_GET,              ch);
-        handlers.put(Actions.CAIXA_MOVIMENTAR,       ch);
-        handlers.put(Actions.CAIXA_MOVIMENTACOES,    ch);
+        handlers.put(Actions.CAIXA_ABRIR,             ch);
+        handlers.put(Actions.CAIXA_FECHAR,            ch);
+        handlers.put(Actions.CAIXA_GET,               ch);
+        handlers.put(Actions.CAIXA_MOVIMENTAR,        ch);
+        handlers.put(Actions.CAIXA_MOVIMENTACOES,     ch);
 
-        // Tarefa
         TarefaHandler th = new TarefaHandler();
-        handlers.put(Actions.TAREFA_CREATE,          th);
-        handlers.put(Actions.TAREFA_LIST,            th);
-        handlers.put(Actions.TAREFA_GET,             th);
-        handlers.put(Actions.TAREFA_UPDATE,          th);
-        handlers.put(Actions.TAREFA_DELETE,          th);
+        handlers.put(Actions.TAREFA_CREATE,           th);
+        handlers.put(Actions.TAREFA_LIST,             th);
+        handlers.put(Actions.TAREFA_GET,              th);
+        handlers.put(Actions.TAREFA_UPDATE,           th);
+        handlers.put(Actions.TAREFA_DELETE,           th);
 
-        // Equipe
         EquipeHandler eh = new EquipeHandler();
-        handlers.put(Actions.EQUIPE_CREATE,          eh);
-        handlers.put(Actions.EQUIPE_LIST,            eh);
-        handlers.put(Actions.EQUIPE_GET,             eh);
-        handlers.put(Actions.EQUIPE_UPDATE,          eh);
-        handlers.put(Actions.EQUIPE_DELETE,          eh);
+        handlers.put(Actions.EQUIPE_CREATE,           eh);
+        handlers.put(Actions.EQUIPE_LIST,             eh);
+        handlers.put(Actions.EQUIPE_GET,              eh);
+        handlers.put(Actions.EQUIPE_UPDATE,           eh);
+        handlers.put(Actions.EQUIPE_DELETE,           eh);
 
-        // Cargo / Permissão
         CargoHandler cargo = new CargoHandler();
-        handlers.put(Actions.CARGO_CREATE,           cargo);
-        handlers.put(Actions.CARGO_LIST,             cargo);
-        handlers.put(Actions.CARGO_GET,              cargo);
-        handlers.put(Actions.CARGO_DELETE,           cargo);
-        handlers.put(Actions.PERMISSAO_CREATE,       cargo);
-        handlers.put(Actions.PERMISSAO_LIST,         cargo);
+        handlers.put(Actions.CARGO_CREATE,            cargo);
+        handlers.put(Actions.CARGO_LIST,              cargo);
+        handlers.put(Actions.CARGO_GET,               cargo);
+        handlers.put(Actions.CARGO_DELETE,            cargo);
+        handlers.put(Actions.PERMISSAO_CREATE,        cargo);
+        handlers.put(Actions.PERMISSAO_LIST,          cargo);
 
-        // Ponto
         PontoHandler ponto = new PontoHandler();
         handlers.put(Actions.PONTO_REGISTRAR_ENTRADA, ponto);
         handlers.put(Actions.PONTO_REGISTRAR_SAIDA,   ponto);
         handlers.put(Actions.PONTO_LIST,              ponto);
 
-        // Mensagens / Conversas
+        // Mensagens — inclui novas actions de leitura
         MensagemHandler msg = new MensagemHandler();
-        handlers.put(Actions.CONVERSA_CREATE,        msg);
-        handlers.put(Actions.CONVERSA_LIST,          msg);
-        handlers.put(Actions.MENSAGEM_SEND,          msg);
-        handlers.put(Actions.MENSAGEM_LIST,          msg);
+        handlers.put(Actions.CONVERSA_CREATE,         msg);
+        handlers.put(Actions.CONVERSA_LIST,           msg);
+        handlers.put(Actions.MENSAGEM_SEND,           msg);
+        handlers.put(Actions.MENSAGEM_LIST,           msg);
+        handlers.put(Actions.MENSAGEM_MARCAR_LIDA,    msg);
+        handlers.put(Actions.MENSAGEM_NAO_LIDAS,      msg);
 
-        // Log
-        handlers.put(Actions.LOG_LIST,               new LogHandler());
+        handlers.put(Actions.LOG_LIST, new LogHandler());
     }
 
     public Response dispatch(Request request, ClientSession session) {
         String action = request.getAction();
 
-        if (action == null || action.isBlank()) {
+        if (action == null || action.isBlank())
             return Response.error("UNKNOWN", "Campo 'action' obrigatório.");
-        }
 
-        // Verificação de autenticação
         if (!PUBLIC_ACTIONS.contains(action)) {
-            if (session == null || !sessionStore.isValid(request.getToken())) {
+            if (session == null || !sessionStore.isValid(request.getToken()))
                 return Response.error(action, "Não autenticado. Faça LOGIN primeiro.");
-            }
         }
 
         ActionHandler handler = handlers.get(action);

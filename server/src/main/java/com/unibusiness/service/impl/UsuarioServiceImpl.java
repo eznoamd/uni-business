@@ -33,6 +33,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public UsuarioEntity update(UsuarioEntity usuario) {
+        EntityManager em = createEntityManager();
+        try {
+            return new UsuarioRepository(em).save(usuario);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public Optional<UsuarioEntity> findById(Integer id) {
         EntityManager em = createEntityManager();
         try {

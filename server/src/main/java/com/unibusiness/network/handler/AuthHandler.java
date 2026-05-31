@@ -6,16 +6,20 @@ import com.unibusiness.network.session.SessionStore;
 import com.unibusiness.protocol.Actions;
 import com.unibusiness.protocol.request.Request;
 import com.unibusiness.protocol.response.Response;
+import com.unibusiness.service.ConversaService;
 import com.unibusiness.service.UsuarioService;
+import com.unibusiness.service.impl.ConversaServiceImpl;
 import com.unibusiness.service.impl.UsuarioServiceImpl;
 import com.unibusiness.util.JsonUtil;
+import com.unibusiness.util.PasswordUtil;
 
 import java.util.Map;
 
 public class AuthHandler implements ActionHandler {
 
-    private final UsuarioService service  = new UsuarioServiceImpl();
-    private final SessionStore   sessions = SessionStore.getInstance();
+    private final UsuarioService  usuarioService  = new UsuarioServiceImpl();
+    private final ConversaService conversaService = new ConversaServiceImpl();
+    private final SessionStore    sessions        = SessionStore.getInstance();
 
     @Override
     public Response handle(Request request, ClientSession session) {
@@ -33,16 +37,14 @@ public class AuthHandler implements ActionHandler {
         if (email == null || senha == null)
             return Response.error(Actions.LOGIN, "Campos 'email' e 'senha' obrigatórios.");
 
-        return service.findByEmail(email).map(usuario -> {
+        return usuarioService.findByEmail(email).map(usuario -> {
 
-            // NOTA: substituir por BCrypt.checkpw(senha, usuario.getSenhaHash()) em produção
-            if (!usuario.getSenhaHash().equals(senha))
+            if (!PasswordUtil.checkPassword(senha, usuario.getSenhaHash()))
                 return Response.error(Actions.LOGIN, "Senha incorreta.");
 
             if (!usuario.getAtivo())
                 return Response.error(Actions.LOGIN, "Usuário inativo.");
 
-            // Cria sessão real reutilizando o socket/writer já abertos
             ClientSession realSession = new ClientSession(
                 tempSession.getSocket(),
                 tempSession.getOut(),
@@ -51,12 +53,19 @@ public class AuthHandler implements ActionHandler {
             );
             String token = sessions.register(realSession);
 
-            return Response.ok(Actions.LOGIN, "Login realizado com sucesso.", Map.of(
+            Response loginOk = Response.ok(Actions.LOGIN, "Login realizado com sucesso.", Map.of(
                 "token",     token,
                 "usuarioId", usuario.getId(),
                 "nome",      usuario.getNome(),
                 "email",     usuario.getEmail()
             ));
+
+            Thread.ofVirtual().start(() -> {
+                Thread.yield();
+                MensagemHandler.enviarPushNaoLidasAposLogin(realSession, conversaService);
+            });
+
+            return loginOk;
 
         }).orElse(Response.error(Actions.LOGIN, "Usuário não encontrado."));
     }
