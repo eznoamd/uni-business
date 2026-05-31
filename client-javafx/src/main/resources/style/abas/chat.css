@@ -1,0 +1,189 @@
+/* ==========================================================
+   GERAL E ESTRUTURA
+   ========================================================== */
+.chat-view {
+    -fx-background-color: #f8fafc;
+}
+
+.chat-header {
+    -fx-padding: 20 20 10 20;
+}
+
+.chat-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2442;
+}
+
+.chat-title-chat {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2442;
+}
+
+.chat-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.chat-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.chat-list {
+    -fx-padding: 10 20 20 20;
+}
+
+/* ITEM DE CONVERSA */
+.chat-item {
+    -fx-background-color: white;
+    -fx-padding: 14;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 6, 0, 0, 2);
+}
+
+.chat-item:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.chat-item-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b2442;
+}
+
+.chat-item-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+
+/* ==========================================================
+   CHAT - HEADER CONVERSA
+   ========================================================== */
+.chat-topbar {
+    -fx-background-color: white;
+    -fx-padding: 12 20;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.chat-back-btn {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #1b2442;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-background-radius: 50;
+    -fx-pref-width: 35;
+    -fx-pref-height: 35;
+}
+
+.chat-back-btn:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.chat-subtitle {
+    -fx-text-fill: #22c55e; /* Verde para dar destaque ao online */
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================================================
+   CHAT - MENSAGENS
+   ========================================================== */
+.chat-messages {
+    -fx-padding: 20;
+}
+
+/* Wrappers para alinhar os balões via CSS */
+.message-wrapper-me {
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.message-wrapper-other {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.message {
+    -fx-padding: 10 14;
+    -fx-background-radius: 16;
+    -fx-max-width: 400;
+}
+
+.message-me {
+    -fx-background-color: #05AD98;
+    /* Efeito de borda arredondada estilo WhatsApp/Telegram */
+    -fx-background-radius: 16 16 2 16; 
+}
+
+.message-me .label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}
+
+.message-other {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 16 16 16 2;
+}
+
+.message-other .label {
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 13px;
+}
+
+/* ==========================================================
+   INPUT CHAT
+   ========================================================== */
+.chat-input-bar {
+    -fx-background-color: white;
+    -fx-padding: 14 20;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1 0 0 0;
+}
+
+.chat-input-bar .text-field {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 20;
+    -fx-padding: 10 16;
+    -fx-border-color: transparent;
+}
+
+.chat-input-bar .text-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: #05AD98;
+    -fx-border-radius: 20;
+}
+
+.chat-send-btn {
+    -fx-background-color: #05AD98;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.chat-send-btn:hover {
+    -fx-background-color: #049b87;
+}
+
+/* ==========================================================
+   CAMADA DE LOADING OVERLAY (INFALÍVEL)
+   ========================================================== */
+.loading-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.custom-spinner {
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    
+    /* Desenha o arco: pinta apenas o topo (05AD98) e deixa o resto transparente */
+    -fx-border-color: #ffffff transparent transparent transparent; 
+    -fx-border-radius: 100%;
+    -fx-border-width: 4px;
+}

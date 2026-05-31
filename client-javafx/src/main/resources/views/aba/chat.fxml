@@ -3,12 +3,51 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane 
-    xmlns:fx="http://javafx.com/fxml"
-    prefWidth="1280"
-    prefHeight="720">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.unibusiness.controller.ChatController"
+            stylesheets="@../../style/abas/chat.css">
 
     <center>
-        <Label text="Chat" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <StackPane fx:id="rootStack">
+
+            <VBox fx:id="chatListView" styleClass="chat-view">
+                <VBox styleClass="chat-header">
+                    <Label text="Conversas" styleClass="chat-title"/>
+                </VBox>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="chat-scroll" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="conversasContainer" spacing="6" styleClass="chat-list"/>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="chatConversationView" visible="false" managed="false" styleClass="chat-view">
+                <HBox styleClass="chat-topbar" spacing="10" alignment="CENTER_LEFT">
+                    <Button text="←" fx:id="backButton" onAction="#voltar" styleClass="chat-back-btn"/>
+                    <VBox>
+                        <Label fx:id="chatTitle" text="Nome" styleClass="chat-title-chat"/>
+                        <Label fx:id="chatSubtitle" text="online" styleClass="chat-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="chat-scroll" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="mensagensContainer" spacing="8" styleClass="chat-messages"/>
+                </ScrollPane>
+
+                <HBox styleClass="chat-input-bar" spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="messageField" promptText="Mensagem..." HBox.hgrow="ALWAYS" onAction="#enviarMensagem"/>
+                    <Button text="Enviar" onAction="#enviarMensagem" styleClass="chat-send-btn"/>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="loadingOverlay" 
+                visible="false" 
+                managed="false" 
+                styleClass="loading-overlay" 
+                alignment="CENTER">
+                
+                <StackPane fx:id="customSpinner" styleClass="custom-spinner"/>
+                
+            </VBox>
+
+        </StackPane>
     </center>
 </BorderPane>

@@ -3,6 +3,7 @@ package com.unibusiness.config;
 import com.unibusiness.model.CargoEntity;
 import com.unibusiness.model.PermissaoEntity;
 import com.unibusiness.model.UsuarioEntity;
+import com.unibusiness.util.PasswordUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -40,7 +41,10 @@ public class DatabasePopulate {
             em.persist(cargoGerente);
             em.persist(cargoOperador);
 
-            UsuarioEntity admin = new UsuarioEntity("Administrador", "admin@unibusiness.com", "admin123");
+            String senha = "admin123";
+            String hashSenha = PasswordUtil.hashPassword(senha);
+
+            UsuarioEntity admin = new UsuarioEntity("Administrador", "admin@unibusiness.com", hashSenha);
             admin.setCargos(Set.of(cargoGerente));
 
             em.persist(admin);
