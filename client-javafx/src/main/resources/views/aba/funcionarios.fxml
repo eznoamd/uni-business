@@ -3,12 +3,58 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane 
-    xmlns:fx="http://javafx.com/fxml"
-    prefWidth="1280"
-    prefHeight="720">
-
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.unibusiness.controller.aba.FuncionariosController"
+            stylesheets="@../../style/sidebar.css">
     <center>
-        <Label text="Funcionarios" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <StackPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll">
+                <content>
+                    <VBox spacing="20" styleClass="content">
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox HBox.hgrow="ALWAYS" spacing="2">
+                                <Label text="Funcionários" styleClass="page-title"/>
+                                <Label text="Usuários cadastrados no sistema" styleClass="page-subtitle"/>
+                            </VBox>
+                            <Button text="↻ Atualizar" onAction="#recarregar" styleClass="btn-ghost"/>
+                        </HBox>
+
+                        <HBox spacing="14">
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Total de usuários" styleClass="kpi-label"/>
+                                <Label fx:id="lblTotal" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Usuários ativos" styleClass="kpi-label"/>
+                                <Label fx:id="lblAtivos" text="—" styleClass="kpi-value"/>
+                                <Label text="contas ativas" styleClass="kpi-trend-up"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="section" spacing="14">
+                            <TextField fx:id="buscaField"
+                                       promptText="🔍  Buscar por nome ou e-mail..."
+                                       styleClass="input" prefWidth="320"/>
+
+                            <TableView fx:id="tabela" prefHeight="420">
+                                <columns>
+                                    <TableColumn fx:id="colId"    text="#"        prefWidth="60"/>
+                                    <TableColumn fx:id="colNome"  text="Nome"     prefWidth="220"/>
+                                    <TableColumn fx:id="colEmail" text="E-mail"   prefWidth="260"/>
+                                    <TableColumn fx:id="colAtivo" text="Status"   prefWidth="100"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <StackPane fx:id="loadingOverlay" visible="false" managed="false"
+                       styleClass="loading-overlay" alignment="CENTER">
+                <StackPane fx:id="customSpinner" styleClass="custom-spinner"/>
+            </StackPane>
+        </StackPane>
     </center>
 </BorderPane>

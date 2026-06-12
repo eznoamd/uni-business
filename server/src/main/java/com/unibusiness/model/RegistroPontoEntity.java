@@ -1,39 +1,18 @@
 package com.unibusiness.model;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "registros_ponto")
 public class RegistroPontoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioEntity usuario;
-
-    @Column(nullable = false)
-    private LocalDate data;
-
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "usuario_id", nullable = false) private UsuarioEntity usuario;
+    @Column(nullable = false) private LocalDate data;
     private LocalDateTime horaEntrada;
-
     private LocalDateTime horaSaida;
-
     private String observacao;
-
-    // Construtores
     public RegistroPontoEntity() {}
-
-    public RegistroPontoEntity(UsuarioEntity usuario, LocalDate data) {
-        this.usuario = usuario;
-        this.data = data;
-    }
-
-    // Getters e Setters
+    public RegistroPontoEntity(UsuarioEntity usuario, LocalDate data) { this.usuario = usuario; this.data = data; }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public UsuarioEntity getUsuario() { return usuario; }

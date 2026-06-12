@@ -7,35 +7,26 @@ import com.unibusiness.dto.Dto;
  * pushes assíncronos do servidor em tempo real.
  *
  * O TcpClient chama esses métodos a partir da thread de leitura.
- * Sempre use Platform.runLater() dentro das implementações
- * para atualizar a UI do JavaFX com segurança.
+ * Sempre use Platform.runLater() dentro das implementações para
+ * atualizar a UI do JavaFX com segurança.
  *
- * Exemplo de uso no ChatController:
- *
- *   TcpClient.getInstance().setPushListener(this);
- *
- *   @Override
- *   public void onNovaMensagem(Dto.PushMensagem push) {
- *       Platform.runLater(() -> renderizarMensagemNaTela(...));
- *   }
+ * Métodos com implementação padrão vazia permitem que controllers
+ * implementem apenas os pushes que precisam.
  */
 public interface PushListener {
 
-    /**
-     * Nova mensagem chegou em tempo real (PUSH_MENSAGEM).
-     * Chamado para todos os participantes online da conversa.
-     */
+    /** Nova mensagem chegou em tempo real (PUSH_MENSAGEM). */
     void onNovaMensagem(Dto.PushMensagem push);
 
-    /**
-     * Contadores de não lidas recebidos logo após o login (PUSH_NAOLIDADAS).
-     * Use para atualizar badges na lista de conversas.
-     */
+    /** Contadores de não lidas recebidos logo após o login (PUSH_NAOLIDADAS). */
     void onNaoLidas(Dto.PushNaoLidas push);
 
-    /**
-     * Outro participante leu as mensagens da conversa (PUSH_MENSAGEM_LIDA).
-     * Use para exibir "✓✓ lido" na UI.
-     */
+    /** Outro participante leu as mensagens da conversa (PUSH_MENSAGEM_LIDA). */
     void onMensagemLida(Dto.PushMensagemLida push);
+
+    /** Status de presença de um usuário mudou (PUSH_STATUS_USUARIO). */
+    default void onStatusUsuario(Dto.PushStatusUsuario push) {}
+
+    /** Um participante está digitando em uma conversa (PUSH_DIGITANDO). */
+    default void onDigitando(Dto.PushDigitando push) {}
 }

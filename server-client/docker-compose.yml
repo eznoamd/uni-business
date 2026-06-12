@@ -1,0 +1,20 @@
+version: "3.8"
+
+# Antes este arquivo também subia o servidor TCP em Java.
+# Agora o "servidor" não existe mais — o app JavaFX fala direto com o Postgres.
+# Este compose sobe SOMENTE o banco. Suba com: docker compose up -d
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: unibusiness
+    ports:
+      - "5432:5432"
+    volumes:
+      - unibusiness_pgdata:/var/lib/postgresql/data
+
+volumes:
+  unibusiness_pgdata:

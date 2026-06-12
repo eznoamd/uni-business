@@ -3,12 +3,115 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane 
-    xmlns:fx="http://javafx.com/fxml"
-    prefWidth="1280"
-    prefHeight="720">
-
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.unibusiness.controller.aba.TarefasController"
+            stylesheets="@../../style/sidebar.css">
     <center>
-        <Label text="Tarefas" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <StackPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll">
+                <content>
+                    <VBox spacing="20" styleClass="content">
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox HBox.hgrow="ALWAYS" spacing="2">
+                                <Label text="Tarefas" styleClass="page-title"/>
+                                <Label text="Gestão de tarefas da equipe" styleClass="page-subtitle"/>
+                            </VBox>
+                            <Button text="+ Nova Tarefa" onAction="#abrirFormNovo" styleClass="btn-primary"/>
+                        </HBox>
+
+                        <!-- KPIs -->
+                        <HBox spacing="14">
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Total" styleClass="kpi-label"/>
+                                <Label fx:id="lblTotal" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Pendentes" styleClass="kpi-label"/>
+                                <Label fx:id="lblPendentes" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Em andamento" styleClass="kpi-label"/>
+                                <Label fx:id="lblAndamento" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Concluídas" styleClass="kpi-label"/>
+                                <Label fx:id="lblConcluidas" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Filtros + tabela -->
+                        <VBox styleClass="section" spacing="14">
+                            <HBox spacing="12" alignment="CENTER_LEFT">
+                                <TextField fx:id="buscaField"
+                                           promptText="🔍  Buscar tarefa..."
+                                           styleClass="input" prefWidth="260"/>
+                                <ComboBox fx:id="filtroStatus" styleClass="combo-box" prefWidth="160"/>
+                            </HBox>
+
+                            <TableView fx:id="tabela" prefHeight="400">
+                                <columns>
+                                    <TableColumn fx:id="colId"          text="#"           prefWidth="50"/>
+                                    <TableColumn fx:id="colTitulo"      text="Título"      prefWidth="200"/>
+                                    <TableColumn fx:id="colStatus"      text="Status"      prefWidth="120"/>
+                                    <TableColumn fx:id="colPrioridade"  text="Prioridade"  prefWidth="100"/>
+                                    <TableColumn fx:id="colResponsavel" text="Responsável" prefWidth="150"/>
+                                    <TableColumn fx:id="colDataFim"     text="Prazo"       prefWidth="120"/>
+                                    <TableColumn fx:id="colAcoes"       text="Ações"       prefWidth="220"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Form overlay -->
+            <StackPane fx:id="formOverlay" visible="false" managed="false"
+                       style="-fx-background-color: rgba(15,23,42,0.4);" alignment="CENTER">
+                <VBox styleClass="section" maxWidth="480" spacing="16">
+                    <Label text="Nova Tarefa" styleClass="section-title"/>
+                    <VBox spacing="6">
+                        <Label text="Título *" styleClass="field-label"/>
+                        <TextField fx:id="fTitulo" promptText="Título da tarefa" styleClass="input"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Descrição" styleClass="field-label"/>
+                        <TextArea fx:id="fDescricao" prefRowCount="3"
+                                  wrapText="true" styleClass="textarea"/>
+                    </VBox>
+                    <HBox spacing="12">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Prioridade" styleClass="field-label"/>
+                            <ComboBox fx:id="fPrioridade" maxWidth="Infinity" styleClass="combo-box">
+                                <items>
+                                    <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="BAIXA"/>
+                                        <String fx:value="MEDIA"/>
+                                        <String fx:value="ALTA"/>
+                                    </javafx.collections.FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Prazo (AAAA-MM-DD)" styleClass="field-label"/>
+                            <TextField fx:id="fDataFim" promptText="2025-12-31" styleClass="input"/>
+                        </VBox>
+                    </HBox>
+                    <VBox spacing="6">
+                        <Label text="Responsável" styleClass="field-label"/>
+                        <ComboBox fx:id="fResponsavel" maxWidth="Infinity" styleClass="combo-box"/>
+                    </VBox>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Cancelar" onAction="#fecharForm" styleClass="btn-ghost"/>
+                        <Button text="Criar Tarefa" onAction="#salvarTarefa" styleClass="btn-primary"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+
+            <StackPane fx:id="loadingOverlay" visible="false" managed="false"
+                       styleClass="loading-overlay" alignment="CENTER">
+                <StackPane fx:id="customSpinner" styleClass="custom-spinner"/>
+            </StackPane>
+        </StackPane>
     </center>
 </BorderPane>

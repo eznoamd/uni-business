@@ -8,7 +8,8 @@ import com.unibusiness.session.SessionManager;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -18,25 +19,23 @@ import java.util.logging.Logger;
 /**
  * Cliente TCP singleton para o UniBusiness Server.
  *
- * Arquitetura de duas threads:
+ * CORREÇÃO do bug de presença online/offline:
  *
- *   Thread de leitura (push-reader):
- *     Fica em loop lendo linhas do socket.
- *     Se a action for um PUSH_*, entrega ao PushListener.
- *     Se for uma resposta normal, coloca na responseQueue.
+ * O problema era uma race condition:
+ *   1. Client envia LOGIN
+ *   2. Server responde com o token
+ *   3. Server lança virtual thread que envia PUSH_STATUS_USUARIO (snapshot de quem está online)
+ *   4. Client recebe o response e navega para o Dashboard
+ *   5. DashboardController registra o PushRouter como listener
  *
- *   Thread principal (JavaFX / Task):
- *     Chama send() e depois aguarda responseQueue.poll() com timeout.
- *     Isso garante que envio e recebimento sejam sincronizados sem bloquear a UI.
+ * Se o passo 3 chegasse ANTES do passo 5 (muito comum, pois JavaFX leva
+ * alguns milissegundos para renderizar o Dashboard), os pushes de presença
+ * eram descartados silenciosamente (pushListener == null).
  *
- * Uso básico:
- *
- *   TcpClient client = TcpClient.getInstance();
- *   client.connect("localhost", 7777);
- *   client.setPushListener(meuController);
- *
- *   ServerResponse resp = client.send("LOGIN", Map.of("email","...","senha","..."));
- *   if (resp.isOk()) { ... }
+ * SOLUÇÃO: Buffer de pushes pendentes.
+ * Pushes recebidos antes de um listener estar registrado são acumulados em
+ * pendingPushes. Quando setPushListener() é chamado, todos os pushes
+ * pendentes são entregues imediatamente ao novo listener.
  */
 public class TcpClient {
 
@@ -47,19 +46,19 @@ public class TcpClient {
 
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
-    private Socket socket;
-    private PrintWriter writer;
-    private Thread readerThread;
+    private Socket       socket;
+    private PrintWriter  writer;
+    private Thread       readerThread;
 
-    /** Fila onde a thread de leitura deposita respostas síncronas. */
     private final BlockingQueue<ServerResponse> responseQueue = new ArrayBlockingQueue<>(1);
-
-    /** Listener que recebe pushes assíncronos do servidor. */
     private volatile PushListener pushListener;
+    private volatile boolean      connected = false;
 
-    private volatile boolean connected = false;
-
-    // ── Singleton ─────────────────────────────────────────────────────────────
+    /**
+     * Buffer de pushes recebidos antes do listener estar registrado.
+     * Protegido por lock no próprio objeto.
+     */
+    private final List<ServerResponse> pendingPushes = new ArrayList<>();
 
     private TcpClient() {}
 
@@ -71,8 +70,8 @@ public class TcpClient {
     // ── Conexão ───────────────────────────────────────────────────────────────
 
     public void connect(String host, int port) throws IOException {
-        socket = new Socket(host, port);
-        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+        socket  = new Socket(host, port);
+        writer  = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         connected = true;
         LOG.info("Conectado ao servidor " + host + ":" + port);
         startReaderThread();
@@ -84,57 +83,62 @@ public class TcpClient {
 
     public void disconnect() {
         connected = false;
-        try {
-            if (socket != null) socket.close();
-        } catch (IOException ignored) {}
+        try { if (socket != null) socket.close(); } catch (IOException ignored) {}
         if (readerThread != null) readerThread.interrupt();
-        LOG.info("Desconectado do servidor.");
+        synchronized (pendingPushes) {
+            pendingPushes.clear();
+        }
     }
 
     // ── Push listener ─────────────────────────────────────────────────────────
 
+    /**
+     * Registra o listener de pushes.
+     *
+     * CORREÇÃO: entrega imediatamente quaisquer pushes que chegaram antes
+     * do listener ser registrado (race condition no login).
+     */
     public void setPushListener(PushListener listener) {
         this.pushListener = listener;
+
+        if (listener == null) return;
+
+        // Drena os pushes pendentes para o novo listener
+        List<ServerResponse> pending;
+        synchronized (pendingPushes) {
+            if (pendingPushes.isEmpty()) return;
+            pending = new ArrayList<>(pendingPushes);
+            pendingPushes.clear();
+        }
+
+        LOG.info("Entregando " + pending.size() + " pushes pendentes ao listener.");
+        for (ServerResponse push : pending) {
+            dispatchPush(push);
+        }
     }
 
-    public void removePushListener() {
-        this.pushListener = null;
-    }
+    public void removePushListener() { this.pushListener = null; }
 
     // ── Envio e recebimento síncrono ──────────────────────────────────────────
 
-    /**
-     * Envia uma requisição e aguarda a resposta do servidor.
-     * Deve ser chamado fora da thread JavaFX (dentro de um Task).
-     *
-     * @param action  action do protocolo (ex: "USUARIO_LIST")
-     * @param payload mapa com os campos do payload (pode ser null)
-     * @return resposta do servidor, ou resposta de erro em caso de timeout
-     */
     public synchronized ServerResponse send(String action, Map<String, Object> payload) {
-        if (!isConnected()) {
-            return errorResponse(action, "Não conectado ao servidor.");
-        }
+        if (!isConnected()) return errorResponse(action, "Não conectado ao servidor.");
 
-        Map<String, Object> request = new HashMap<>();
+        Map<String, Object> request = new java.util.HashMap<>();
         request.put("action", action);
 
         String token = SessionManager.getInstance().getToken();
         if (token != null) request.put("token", token);
-
         request.put("payload", payload != null ? payload : Map.of());
 
-        // Limpa fila antes de enviar para não pegar resposta de outra requisição
         responseQueue.clear();
-
         writer.println(gson.toJson(request));
         writer.flush();
 
         try {
             ServerResponse response = responseQueue.poll(TIMEOUT_SEGUNDOS, TimeUnit.SECONDS);
-            if (response == null) {
+            if (response == null)
                 return errorResponse(action, "Timeout: servidor não respondeu em " + TIMEOUT_SEGUNDOS + "s.");
-            }
             return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -142,7 +146,6 @@ public class TcpClient {
         }
     }
 
-    /** Atalho para envio sem payload. */
     public synchronized ServerResponse send(String action) {
         return send(action, null);
     }
@@ -153,7 +156,6 @@ public class TcpClient {
         readerThread = new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()))) {
-
                 String line;
                 while (connected && (line = reader.readLine()) != null) {
                     processLine(line);
@@ -170,11 +172,6 @@ public class TcpClient {
         readerThread.start();
     }
 
-    /**
-     * Processa cada linha JSON recebida do servidor.
-     * Pushes → PushListener.
-     * Respostas normais → responseQueue.
-     */
     private void processLine(String line) {
         ServerResponse response;
         try {
@@ -188,11 +185,12 @@ public class TcpClient {
         if (action == null) return;
 
         switch (action) {
-            case "PUSH_MENSAGEM"    -> handlePushMensagem(response);
-            case "PUSH_NAOLIDADAS" -> handlePushNaoLidas(response);
-            case "PUSH_MENSAGEM_LIDA" -> handlePushMensagemLida(response);
-            default                 -> {
-                // Resposta síncrona normal — deposita na fila
+            case "PUSH_MENSAGEM",
+                 "PUSH_NAOLIDADAS",
+                 "PUSH_MENSAGEM_LIDA",
+                 "PUSH_STATUS_USUARIO",
+                 "PUSH_DIGITANDO" -> handlePush(response);
+            default -> {
                 try {
                     responseQueue.put(response);
                 } catch (InterruptedException e) {
@@ -202,45 +200,54 @@ public class TcpClient {
         }
     }
 
-    // ── Handlers de push ──────────────────────────────────────────────────────
-
-    private void handlePushMensagem(ServerResponse response) {
-        PushListener listener = pushListener;
-        if (listener == null || response.getData() == null) return;
-        try {
-            Dto.PushMensagem push = gson.fromJson(response.getData(), Dto.PushMensagem.class);
-            listener.onNovaMensagem(push);
-        } catch (Exception e) {
-            LOG.warning("Erro ao processar PUSH_MENSAGEM: " + e.getMessage());
+    /**
+     * Trata um push recebido.
+     *
+     * CORREÇÃO: se o listener ainda não está registrado, armazena o push
+     * no buffer pendingPushes em vez de descartá-lo.
+     */
+    private void handlePush(ServerResponse response) {
+        PushListener l = pushListener;
+        if (l == null) {
+            // Listener ainda não registrado — buffer o push para entrega posterior
+            synchronized (pendingPushes) {
+                pendingPushes.add(response);
+                LOG.fine("Push " + response.getAction() + " bufferizado (listener não registrado ainda).");
+            }
+            return;
         }
+        dispatchPush(response);
     }
 
-    private void handlePushNaoLidas(ServerResponse response) {
-        PushListener listener = pushListener;
-        if (listener == null || response.getData() == null) return;
-        try {
-            Dto.PushNaoLidas push = gson.fromJson(response.getData(), Dto.PushNaoLidas.class);
-            listener.onNaoLidas(push);
-        } catch (Exception e) {
-            LOG.warning("Erro ao processar PUSH_NAOLIDADAS: " + e.getMessage());
-        }
-    }
+    /**
+     * Despacha um push para o listener registrado.
+     */
+    private void dispatchPush(ServerResponse response) {
+        PushListener l = pushListener;
+        if (l == null || response.getData() == null) return;
 
-    private void handlePushMensagemLida(ServerResponse response) {
-        PushListener listener = pushListener;
-        if (listener == null || response.getData() == null) return;
+        String action = response.getAction();
         try {
-            Dto.PushMensagemLida push = gson.fromJson(response.getData(), Dto.PushMensagemLida.class);
-            listener.onMensagemLida(push);
+            switch (action) {
+                case "PUSH_MENSAGEM" ->
+                    l.onNovaMensagem(gson.fromJson(response.getData(), Dto.PushMensagem.class));
+                case "PUSH_NAOLIDADAS" ->
+                    l.onNaoLidas(gson.fromJson(response.getData(), Dto.PushNaoLidas.class));
+                case "PUSH_MENSAGEM_LIDA" ->
+                    l.onMensagemLida(gson.fromJson(response.getData(), Dto.PushMensagemLida.class));
+                case "PUSH_STATUS_USUARIO" ->
+                    l.onStatusUsuario(gson.fromJson(response.getData(), Dto.PushStatusUsuario.class));
+                case "PUSH_DIGITANDO" ->
+                    l.onDigitando(gson.fromJson(response.getData(), Dto.PushDigitando.class));
+            }
         } catch (Exception e) {
-            LOG.warning("Erro ao processar PUSH_MENSAGEM_LIDA: " + e.getMessage());
+            LOG.warning("Erro ao processar " + action + ": " + e.getMessage());
         }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private ServerResponse errorResponse(String action, String message) {
-        // Cria uma ServerResponse de erro sem ir ao servidor
         String json = gson.toJson(Map.of(
             "status",  "ERROR",
             "action",  action,

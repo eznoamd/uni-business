@@ -2,7 +2,6 @@ package com.unibusiness.service.impl;
 
 import com.unibusiness.config.PersistenceManager;
 import com.unibusiness.model.*;
-import com.unibusiness.repository.MensagemRepository;
 import com.unibusiness.repository.MensagemStatusRepository;
 import com.unibusiness.repository.UsuarioRepository;
 import com.unibusiness.service.ConversaService;
@@ -18,13 +17,13 @@ public class ConversaServiceImpl implements ConversaService {
     private final EntityManagerFactory emf = PersistenceManager.getEntityManagerFactory();
 
     @Override
-    public ConversaEntity criar(String tipo, Integer criadorId, Set<Integer> participanteIds) {
+    public ConversaEntity criar(ConversaEntity.Tipo tipo, String nome, Integer criadorId, Set<Integer> participanteIds) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
 
-            ConversaEntity conversa = new ConversaEntity(tipo.toUpperCase());
+            ConversaEntity conversa = new ConversaEntity(tipo, nome);
             em.persist(conversa);
 
             UsuarioRepository repo = new UsuarioRepository(em);
@@ -73,9 +72,7 @@ public class ConversaServiceImpl implements ConversaService {
             tx.begin();
 
             ConversaEntity conversa = em.createQuery(
-                "SELECT c FROM ConversaEntity c " +
-                "LEFT JOIN FETCH c.participantes " +
-                "WHERE c.id = :id",
+                "SELECT c FROM ConversaEntity c LEFT JOIN FETCH c.participantes WHERE c.id = :id",
                 ConversaEntity.class)
                 .setParameter("id", conversaId)
                 .getResultStream().findFirst()
@@ -86,6 +83,7 @@ public class ConversaServiceImpl implements ConversaService {
 
             MensagemEntity msg = new MensagemEntity(conversa, remetente, conteudo);
             em.persist(msg);
+
             for (UsuarioEntity participante : conversa.getParticipantes()) {
                 if (!participante.getId().equals(remetenteId)) {
                     em.persist(new MensagemStatusEntity(msg, participante));
@@ -94,13 +92,11 @@ public class ConversaServiceImpl implements ConversaService {
 
             tx.commit();
             return msg;
-            
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             throw e;
         } finally { em.close(); }
     }
-
 
     @Override
     public List<MensagemEntity> listarMensagens(Integer conversaId) {
@@ -108,10 +104,8 @@ public class ConversaServiceImpl implements ConversaService {
         try {
             return em.createQuery(
                 "SELECT m FROM MensagemEntity m " +
-                "JOIN FETCH m.remetente " +
-                "JOIN FETCH m.conversa " +
-                "WHERE m.conversa.id = :cid " +
-                "ORDER BY m.enviadoEm",
+                "JOIN FETCH m.remetente JOIN FETCH m.conversa " +
+                "WHERE m.conversa.id = :cid ORDER BY m.enviadoEm",
                 MensagemEntity.class)
                 .setParameter("cid", conversaId)
                 .getResultList();
@@ -124,8 +118,7 @@ public class ConversaServiceImpl implements ConversaService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            int atualizadas = new MensagemStatusRepository(em)
-                .marcarConversaComoLida(usuarioId, conversaId);
+            int atualizadas = new MensagemStatusRepository(em).marcarConversaComoLida(usuarioId, conversaId);
             tx.commit();
             return atualizadas;
         } catch (Exception e) {
@@ -138,9 +131,7 @@ public class ConversaServiceImpl implements ConversaService {
     public Map<Integer, Long> contarNaoLidasPorConversa(Integer usuarioId) {
         EntityManager em = emf.createEntityManager();
         try {
-            List<Object[]> rows = new MensagemStatusRepository(em)
-                .contarNaoLidasPorConversa(usuarioId);
-
+            List<Object[]> rows = new MensagemStatusRepository(em).contarNaoLidasPorConversa(usuarioId);
             return rows.stream().collect(Collectors.toMap(
                 row -> (Integer) row[0],
                 row -> (Long)    row[1]

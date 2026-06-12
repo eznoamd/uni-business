@@ -3,12 +3,114 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane 
-    xmlns:fx="http://javafx.com/fxml"
-    prefWidth="1280"
-    prefHeight="720">
-
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.unibusiness.controller.aba.FinanceiroController"
+            stylesheets="@../../style/sidebar.css">
     <center>
-        <Label text="Financeiro" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <StackPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll">
+                <content>
+                    <VBox spacing="20" styleClass="content">
+
+                        <!-- Header -->
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox HBox.hgrow="ALWAYS" spacing="2">
+                                <Label text="Financeiro" styleClass="page-title"/>
+                                <Label text="Controle de caixa e movimentações" styleClass="page-subtitle"/>
+                            </VBox>
+                            <Button fx:id="btnAbrirFechar" text="Abrir Caixa"
+                                    onAction="#toggleCaixa" styleClass="btn-primary"/>
+                        </HBox>
+
+                        <!-- KPIs -->
+                        <HBox spacing="14">
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Status do caixa" styleClass="kpi-label"/>
+                                <Label fx:id="lblStatus" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Saldo atual" styleClass="kpi-label"/>
+                                <Label fx:id="lblSaldoAtual" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Saldo inicial" styleClass="kpi-label"/>
+                                <Label fx:id="lblSaldoInicial" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Aberto em" styleClass="kpi-label"/>
+                                <Label fx:id="lblAbertura" text="—" styleClass="kpi-value"
+                                       style="-fx-font-size: 16px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Painel ações (só quando aberto) -->
+                        <HBox fx:id="painelCaixaAberto" visible="false" managed="false" spacing="10">
+                            <Button text="+ Registrar Movimentação"
+                                    onAction="#abrirMovimentar" styleClass="btn-secondary"/>
+                        </HBox>
+
+                        <!-- Tabela movimentações -->
+                        <VBox styleClass="section" spacing="12">
+                            <Label text="Movimentações do caixa" styleClass="section-title"/>
+                            <TableView fx:id="tabelaMov" prefHeight="380">
+                                <columns>
+                                    <TableColumn fx:id="colTipo"  text="Tipo"       prefWidth="100"/>
+                                    <TableColumn fx:id="colValor" text="Valor"      prefWidth="120"/>
+                                    <TableColumn fx:id="colDesc"  text="Descrição"  prefWidth="280"/>
+                                    <TableColumn fx:id="colData"  text="Realizada em" prefWidth="160"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Abrir caixa overlay -->
+            <StackPane fx:id="abrirOverlay" visible="false" managed="false"
+                       style="-fx-background-color: rgba(15,23,42,0.4);" alignment="CENTER">
+                <VBox styleClass="section" maxWidth="360" spacing="16">
+                    <Label text="Abrir Caixa" styleClass="section-title"/>
+                    <VBox spacing="6">
+                        <Label text="Saldo inicial (R$)" styleClass="field-label"/>
+                        <TextField fx:id="saldoInicialField" promptText="0.00" styleClass="input"/>
+                    </VBox>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Cancelar" onAction="#fecharAbrirOverlay" styleClass="btn-ghost"/>
+                        <Button text="Abrir Caixa" onAction="#confirmarAbrirCaixa" styleClass="btn-primary"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+
+            <!-- Movimentação overlay -->
+            <StackPane fx:id="movOverlay" visible="false" managed="false"
+                       style="-fx-background-color: rgba(15,23,42,0.4);" alignment="CENTER">
+                <VBox styleClass="section" maxWidth="400" spacing="16">
+                    <Label text="Registrar Movimentação" styleClass="section-title"/>
+                    <VBox spacing="6">
+                        <Label text="Tipo" styleClass="field-label"/>
+                        <ComboBox fx:id="movTipo" maxWidth="Infinity" styleClass="combo-box"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Valor (R$)" styleClass="field-label"/>
+                        <TextField fx:id="movValor" promptText="0.00" styleClass="input"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Descrição *" styleClass="field-label"/>
+                        <TextField fx:id="movDesc" promptText="Ex: Venda de produtos" styleClass="input"/>
+                    </VBox>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Cancelar" onAction="#fecharMovOverlay" styleClass="btn-ghost"/>
+                        <Button text="Registrar" onAction="#confirmarMovimentacao" styleClass="btn-primary"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+
+            <!-- Loading -->
+            <StackPane fx:id="loadingOverlay" visible="false" managed="false"
+                       styleClass="loading-overlay" alignment="CENTER">
+                <StackPane fx:id="customSpinner" styleClass="custom-spinner"/>
+            </StackPane>
+        </StackPane>
     </center>
 </BorderPane>

@@ -1,44 +1,17 @@
 package com.unibusiness.model;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "movimentacoes_estoque")
 public class MovimentacaoEstoqueEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "produto_id", nullable = false)
-    private ProdutoEntity produto;
-
-    @Column(nullable = false)
-    private String tipo;
-
-    @Column(nullable = false)
-    private Integer quantidade;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime data = LocalDateTime.now();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioEntity usuario;
-
-    // Construtores
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "produto_id", nullable = false) private ProdutoEntity produto;
+    @Column(nullable = false) private String tipo;
+    @Column(nullable = false) private Integer quantidade;
+    @Column(nullable = false, updatable = false) private LocalDateTime data = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "usuario_id", nullable = false) private UsuarioEntity usuario;
     public MovimentacaoEstoqueEntity() {}
-
-    public MovimentacaoEstoqueEntity(ProdutoEntity produto, String tipo, Integer quantidade, UsuarioEntity usuario) {
-        this.produto = produto;
-        this.tipo = tipo;
-        this.quantidade = quantidade;
-        this.usuario = usuario;
-    }
-
-    // Getters e Setters
+    public MovimentacaoEstoqueEntity(ProdutoEntity produto, String tipo, Integer quantidade, UsuarioEntity usuario) { this.produto = produto; this.tipo = tipo; this.quantidade = quantidade; this.usuario = usuario; }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public ProdutoEntity getProduto() { return produto; }

@@ -1,39 +1,19 @@
 package com.unibusiness.model;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 @Table(name = "caixa")
 public class CaixaEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataAbertura = LocalDateTime.now();
-
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+    @Column(nullable = false, updatable = false) private LocalDateTime dataAbertura = LocalDateTime.now();
     private LocalDateTime dataFechamento;
-
-    @Column(nullable = false)
-    private Float saldoInicial = 0F;
-
+    @Column(nullable = false) private Float saldoInicial = 0F;
     private Float saldoFinal;
-
-    @OneToMany(mappedBy = "caixa", cascade = CascadeType.REMOVE)
-    private Set<MovimentacaoCaixaEntity> movimentacoes = new HashSet<>();
-
-    // Construtores
+    @OneToMany(mappedBy = "caixa", cascade = CascadeType.REMOVE) private Set<MovimentacaoCaixaEntity> movimentacoes = new HashSet<>();
     public CaixaEntity() {}
-
-    public CaixaEntity(Float saldoInicial) {
-        this.saldoInicial = saldoInicial;
-    }
-
-    // Getters e Setters
+    public CaixaEntity(Float saldoInicial) { this.saldoInicial = saldoInicial; }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public LocalDateTime getDataAbertura() { return dataAbertura; }

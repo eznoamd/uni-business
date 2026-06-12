@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class TcpServer {
 
     private static final Logger LOG = Logger.getLogger(TcpServer.class.getName());
@@ -38,7 +37,9 @@ public class TcpServer {
             try {
                 Socket client = serverSocket.accept();
                 client.setKeepAlive(true);
-                client.setSoTimeout(0);
+                // CORREÇÃO: removido setSoTimeout(0) que anulava o timeout
+                // definido pelo ClientHandler. O ClientHandler define
+                // setSoTimeout(15_000) para detectar desconexões abruptas.
                 pool.submit(new ClientHandler(client, dispatcher));
             } catch (IOException e) {
                 if (running) {

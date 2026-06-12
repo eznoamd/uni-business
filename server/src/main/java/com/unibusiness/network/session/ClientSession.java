@@ -1,8 +1,8 @@
 package com.unibusiness.network.session;
 
+import com.google.gson.Gson;
 import com.unibusiness.model.UsuarioEntity;
 import com.unibusiness.protocol.response.Response;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,11 +37,9 @@ public class ClientSession {
         try { socket.close(); } catch (IOException ignored) {}
     }
 
-
-    public Socket        getSocket()  { return socket; }
-
-    public PrintWriter   getOut()     { return out; }
-    public UsuarioEntity getUsuario() { return usuario; }
-    public String        getToken()   { return token; }
+    public Socket        getSocket()            { return socket; }
+    public PrintWriter   getOut()               { return out; }
+    public UsuarioEntity getUsuario()           { return usuario; }
+    public String        getToken()             { return token; }
     public void          setToken(String token) { this.token = token; }
 }

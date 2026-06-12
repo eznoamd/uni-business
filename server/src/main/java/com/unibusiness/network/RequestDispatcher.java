@@ -12,6 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * Dispatcher de actions.
+ *
+ * CORREÇÃO: registra Actions.CAIXA_GET_ATUAL no CaixaHandler.
+ */
 public class RequestDispatcher {
 
     private static final Logger LOG = Logger.getLogger(RequestDispatcher.class.getName());
@@ -26,67 +31,69 @@ public class RequestDispatcher {
     }
 
     private void registerHandlers() {
-        handlers.put(Actions.LOGIN,  new AuthHandler());
-        handlers.put(Actions.LOGOUT, new AuthHandler());
+        AuthHandler auth = new AuthHandler();
+        handlers.put(Actions.LOGIN,  auth);
+        handlers.put(Actions.LOGOUT, auth);
 
-        UsuarioHandler uh = new UsuarioHandler();
-        handlers.put(Actions.USUARIO_CREATE,          uh);
-        handlers.put(Actions.USUARIO_LIST,            uh);
-        handlers.put(Actions.USUARIO_GET,             uh);
-        handlers.put(Actions.USUARIO_UPDATE,          uh);
-        handlers.put(Actions.USUARIO_DELETE,          uh);
+        UsuarioHandler usuario = new UsuarioHandler();
+        handlers.put(Actions.USUARIO_CREATE, usuario);
+        handlers.put(Actions.USUARIO_LIST,   usuario);
+        handlers.put(Actions.USUARIO_GET,    usuario);
+        handlers.put(Actions.USUARIO_UPDATE, usuario);
+        handlers.put(Actions.USUARIO_DELETE, usuario);
 
-        ProdutoHandler ph = new ProdutoHandler();
-        handlers.put(Actions.PRODUTO_CREATE,          ph);
-        handlers.put(Actions.PRODUTO_LIST,            ph);
-        handlers.put(Actions.PRODUTO_GET,             ph);
-        handlers.put(Actions.PRODUTO_UPDATE,          ph);
-        handlers.put(Actions.PRODUTO_DELETE,          ph);
-        handlers.put(Actions.ESTOQUE_MOVIMENTAR,      ph);
-        handlers.put(Actions.ESTOQUE_MOVIMENTACOES,   ph);
+        ProdutoHandler produto = new ProdutoHandler();
+        handlers.put(Actions.PRODUTO_CREATE,        produto);
+        handlers.put(Actions.PRODUTO_LIST,          produto);
+        handlers.put(Actions.PRODUTO_GET,           produto);
+        handlers.put(Actions.PRODUTO_UPDATE,        produto);
+        handlers.put(Actions.PRODUTO_DELETE,        produto);
+        handlers.put(Actions.ESTOQUE_MOVIMENTAR,    produto);
+        handlers.put(Actions.ESTOQUE_MOVIMENTACOES, produto);
 
-        CaixaHandler ch = new CaixaHandler();
-        handlers.put(Actions.CAIXA_ABRIR,             ch);
-        handlers.put(Actions.CAIXA_FECHAR,            ch);
-        handlers.put(Actions.CAIXA_GET,               ch);
-        handlers.put(Actions.CAIXA_MOVIMENTAR,        ch);
-        handlers.put(Actions.CAIXA_MOVIMENTACOES,     ch);
+        CaixaHandler caixa = new CaixaHandler();
+        handlers.put(Actions.CAIXA_ABRIR,         caixa);
+        handlers.put(Actions.CAIXA_FECHAR,        caixa);
+        handlers.put(Actions.CAIXA_GET,           caixa);
+        handlers.put(Actions.CAIXA_GET_ATUAL,     caixa);   // NOVO
+        handlers.put(Actions.CAIXA_MOVIMENTAR,    caixa);
+        handlers.put(Actions.CAIXA_MOVIMENTACOES, caixa);
 
-        TarefaHandler th = new TarefaHandler();
-        handlers.put(Actions.TAREFA_CREATE,           th);
-        handlers.put(Actions.TAREFA_LIST,             th);
-        handlers.put(Actions.TAREFA_GET,              th);
-        handlers.put(Actions.TAREFA_UPDATE,           th);
-        handlers.put(Actions.TAREFA_DELETE,           th);
+        TarefaHandler tarefa = new TarefaHandler();
+        handlers.put(Actions.TAREFA_CREATE, tarefa);
+        handlers.put(Actions.TAREFA_LIST,   tarefa);
+        handlers.put(Actions.TAREFA_GET,    tarefa);
+        handlers.put(Actions.TAREFA_UPDATE, tarefa);
+        handlers.put(Actions.TAREFA_DELETE, tarefa);
 
-        EquipeHandler eh = new EquipeHandler();
-        handlers.put(Actions.EQUIPE_CREATE,           eh);
-        handlers.put(Actions.EQUIPE_LIST,             eh);
-        handlers.put(Actions.EQUIPE_GET,              eh);
-        handlers.put(Actions.EQUIPE_UPDATE,           eh);
-        handlers.put(Actions.EQUIPE_DELETE,           eh);
+        EquipeHandler equipe = new EquipeHandler();
+        handlers.put(Actions.EQUIPE_CREATE, equipe);
+        handlers.put(Actions.EQUIPE_LIST,   equipe);
+        handlers.put(Actions.EQUIPE_GET,    equipe);
+        handlers.put(Actions.EQUIPE_UPDATE, equipe);
+        handlers.put(Actions.EQUIPE_DELETE, equipe);
 
         CargoHandler cargo = new CargoHandler();
-        handlers.put(Actions.CARGO_CREATE,            cargo);
-        handlers.put(Actions.CARGO_LIST,              cargo);
-        handlers.put(Actions.CARGO_GET,               cargo);
-        handlers.put(Actions.CARGO_DELETE,            cargo);
-        handlers.put(Actions.PERMISSAO_CREATE,        cargo);
-        handlers.put(Actions.PERMISSAO_LIST,          cargo);
+        handlers.put(Actions.CARGO_CREATE,     cargo);
+        handlers.put(Actions.CARGO_LIST,       cargo);
+        handlers.put(Actions.CARGO_GET,        cargo);
+        handlers.put(Actions.CARGO_DELETE,     cargo);
+        handlers.put(Actions.PERMISSAO_CREATE, cargo);
+        handlers.put(Actions.PERMISSAO_LIST,   cargo);
 
         PontoHandler ponto = new PontoHandler();
         handlers.put(Actions.PONTO_REGISTRAR_ENTRADA, ponto);
         handlers.put(Actions.PONTO_REGISTRAR_SAIDA,   ponto);
         handlers.put(Actions.PONTO_LIST,              ponto);
 
-        // Mensagens — inclui novas actions de leitura
-        MensagemHandler msg = new MensagemHandler();
-        handlers.put(Actions.CONVERSA_CREATE,         msg);
-        handlers.put(Actions.CONVERSA_LIST,           msg);
-        handlers.put(Actions.MENSAGEM_SEND,           msg);
-        handlers.put(Actions.MENSAGEM_LIST,           msg);
-        handlers.put(Actions.MENSAGEM_MARCAR_LIDA,    msg);
-        handlers.put(Actions.MENSAGEM_NAO_LIDAS,      msg);
+        MensagemHandler mensagem = new MensagemHandler();
+        handlers.put(Actions.CONVERSA_CREATE,      mensagem);
+        handlers.put(Actions.CONVERSA_LIST,        mensagem);
+        handlers.put(Actions.MENSAGEM_SEND,        mensagem);
+        handlers.put(Actions.MENSAGEM_LIST,        mensagem);
+        handlers.put(Actions.MENSAGEM_MARCAR_LIDA, mensagem);
+        handlers.put(Actions.MENSAGEM_NAO_LIDAS,   mensagem);
+        handlers.put(Actions.USUARIO_DIGITANDO,    mensagem);
 
         handlers.put(Actions.LOG_LIST, new LogHandler());
     }

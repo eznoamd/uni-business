@@ -1,67 +1,27 @@
 package com.unibusiness.model;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 @Table(name = "tarefas")
 public class TarefaEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false)
-    private String titulo;
-
-    @Column(columnDefinition = "TEXT")
-    private String descricao;
-
-    @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false)
-    private String prioridade;
-
-    @Column(nullable = false)
-    private LocalDateTime dataInicio;
-
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+    @Column(nullable = false) private String titulo;
+    @Column(columnDefinition = "TEXT") private String descricao;
+    @Column(nullable = false) private String status;
+    @Column(nullable = false) private String prioridade;
+    @Column(nullable = false) private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "criado_por", nullable = false)
-    private UsuarioEntity criadoPor;
-
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "criado_por", nullable = false) private UsuarioEntity criadoPor;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tarefa_usuario",
-            joinColumns = @JoinColumn(name = "tarefa_id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
+    @JoinTable(name = "tarefa_usuario", joinColumns = @JoinColumn(name = "tarefa_id"), inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     private Set<UsuarioEntity> usuariosAtribuidos = new HashSet<>();
-
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tarefa_equipe",
-            joinColumns = @JoinColumn(name = "tarefa_id"),
-            inverseJoinColumns = @JoinColumn(name = "equipe_id")
-    )
+    @JoinTable(name = "tarefa_equipe", joinColumns = @JoinColumn(name = "tarefa_id"), inverseJoinColumns = @JoinColumn(name = "equipe_id"))
     private Set<EquipeEntity> equipesAtribuidas = new HashSet<>();
-
-    // Construtores
     public TarefaEntity() {}
-
-    public TarefaEntity(String titulo, String status, String prioridade, LocalDateTime dataInicio, UsuarioEntity criadoPor) {
-        this.titulo = titulo;
-        this.status = status;
-        this.prioridade = prioridade;
-        this.dataInicio = dataInicio;
-        this.criadoPor = criadoPor;
-    }
-
-    // Getters e Setters
+    public TarefaEntity(String titulo, String status, String prioridade, LocalDateTime dataInicio, UsuarioEntity criadoPor) { this.titulo = titulo; this.status = status; this.prioridade = prioridade; this.dataInicio = dataInicio; this.criadoPor = criadoPor; }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

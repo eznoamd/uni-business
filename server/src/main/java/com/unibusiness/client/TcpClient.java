@@ -10,22 +10,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Cliente TCP para o UniBusiness Server.
- *
- * FIX (race condition no reader): a thread de push e o método sendAndReceive()
- * competiam pelo mesmo BufferedReader sem sincronização adequada.
- *
- * Solução: uma única thread de leitura (readerThread) consome TODAS as linhas
- * do socket. Respostas síncronas (request/response) são enfileiradas em
- * responseQueue. Pushes assíncronos (action começa com "PUSH_") são tratados
- * diretamente no listener. Assim, nunca há duas threads lendo o mesmo stream.
- */
 public class TcpClient {
 
-    private static final String HOST           = "localhost";
-    private static final int    PORT           = 7777;
-    private static final long   TIMEOUT_MS     = 10_000;
+    private static final String HOST       = "localhost";
+    private static final int    PORT       = 7777;
+    private static final long   TIMEOUT_MS = 10_000;
 
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -34,10 +23,7 @@ public class TcpClient {
     private PrintWriter   writer;
     private String        token;
 
-    // FIX: fila que desacopla leitura síncrona de pushes assíncronos
     private final BlockingQueue<Map<String, Object>> responseQueue = new LinkedBlockingQueue<>();
-
-    // ── Conexão ───────────────────────────────────────────────────────────────
 
     public void connect() throws IOException {
         socket = new Socket(HOST, PORT);
@@ -45,7 +31,6 @@ public class TcpClient {
         writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         System.out.println("[cliente] Conectado a " + HOST + ":" + PORT);
 
-        // FIX: UMA única thread lê o socket; despacha para fila ou handler de push
         Thread readerThread = new Thread(this::readLoop, "socket-reader");
         readerThread.setDaemon(true);
         readerThread.start();
@@ -55,8 +40,6 @@ public class TcpClient {
         if (token != null) send(Map.of("action", "LOGOUT", "token", token));
         socket.close();
     }
-
-    // ── Autenticação ──────────────────────────────────────────────────────────
 
     public boolean login(String email, String senha) throws IOException, InterruptedException {
         Map<String, Object> req = Map.of(
@@ -77,39 +60,43 @@ public class TcpClient {
         }
     }
 
-    // ── Requisições autenticadas ──────────────────────────────────────────────
-
-    public void listarUsuarios() throws IOException, InterruptedException {
-        Map<String, Object> req = Map.of(
-            "action",  "USUARIO_LIST",
-            "token",   token,
-            "payload", Map.of()
-        );
-        Map<String, Object> resp = sendAndReceive(req);
-        System.out.println("[cliente] Usuários: " + gson.toJson(resp.get("data")));
+    public void listarConversas() throws IOException, InterruptedException {
+        Map<String, Object> resp = sendAndReceive(Map.of(
+            "action", "CONVERSA_LIST", "token", token, "payload", Map.of()
+        ));
+        System.out.println("[cliente] Conversas: " + gson.toJson(resp.get("data")));
     }
 
     public void enviarMensagem(int conversaId, String conteudo) throws IOException, InterruptedException {
-        Map<String, Object> req = Map.of(
+        Map<String, Object> resp = sendAndReceive(Map.of(
             "action",  "MENSAGEM_SEND",
             "token",   token,
             "payload", Map.of("conversaId", conversaId, "conteudo", conteudo)
-        );
-        Map<String, Object> resp = sendAndReceive(req);
+        ));
         System.out.println("[cliente] Mensagem enviada: " + resp.get("message"));
     }
 
-    // ── I/O ───────────────────────────────────────────────────────────────────
+    public void digitando(int conversaId) {
+        send(Map.of(
+            "action",  "USUARIO_DIGITANDO",
+            "token",   token,
+            "payload", Map.of("conversaId", conversaId, "digitando", true)
+        ));
+    }
+
+    public void pararDigitando(int conversaId) {
+        send(Map.of(
+            "action",  "USUARIO_DIGITANDO",
+            "token",   token,
+            "payload", Map.of("conversaId", conversaId, "digitando", false)
+        ));
+    }
 
     private synchronized void send(Map<String, Object> request) {
         writer.println(gson.toJson(request));
         writer.flush();
     }
 
-    /**
-     * FIX: envia a requisição e aguarda a próxima RESPOSTA na fila,
-     * sem competir com a thread de leitura.
-     */
     @SuppressWarnings("unchecked")
     private Map<String, Object> sendAndReceive(Map<String, Object> request)
             throws IOException, InterruptedException {
@@ -119,11 +106,6 @@ public class TcpClient {
         return resp;
     }
 
-    /**
-     * FIX: loop único que lê o socket. Pushes (action = "PUSH_*") vão para
-     * handlePush(); todo o resto vai para responseQueue e é consumido por
-     * sendAndReceive().
-     */
     @SuppressWarnings("unchecked")
     private void readLoop() {
         try {
@@ -147,37 +129,45 @@ public class TcpClient {
 
     @SuppressWarnings("unchecked")
     private void handlePush(String action, Map<String, Object> msg) {
+        Map<String, Object> data = (Map<String, Object>) msg.get("data");
         switch (action) {
-            case "PUSH_MENSAGEM" -> {
-                Map<String, Object> data = (Map<String, Object>) msg.get("data");
-                System.out.printf("[PUSH] Nova mensagem de %s na conversa %s: %s%n",
-                    data.get("remetente"),
-                    data.get("conversaId"),
-                    data.get("conteudo"));
+            case "PUSH_MENSAGEM" -> System.out.printf(
+                "[PUSH] Nova mensagem de %s na conversa %s: %s%n",
+                data.get("remetente"), data.get("conversaId"), data.get("conteudo"));
+            case "PUSH_NAOLIDADAS" -> System.out.printf(
+                "[PUSH] Você tem %s mensagens não lidas.%n", data.get("total"));
+            case "PUSH_MENSAGEM_LIDA" -> System.out.printf(
+                "[PUSH] %s leu as mensagens da conversa %s.%n",
+                data.get("usuario"), data.get("conversaId"));
+            case "PUSH_STATUS_USUARIO" -> {
+                boolean online = Boolean.TRUE.equals(data.get("online"));
+                System.out.printf("[PUSH] %s está %s.%n",
+                    data.get("nome"), online ? "online" : "offline");
             }
-            case "PUSH_NAOLIDADAS" -> {
-                Map<String, Object> data = (Map<String, Object>) msg.get("data");
-                System.out.printf("[PUSH] Você tem %s mensagens não lidas.%n", data.get("total"));
-            }
-            case "PUSH_MENSAGEM_LIDA" -> {
-                Map<String, Object> data = (Map<String, Object>) msg.get("data");
-                System.out.printf("[PUSH] %s leu as mensagens da conversa %s.%n",
-                    data.get("usuario"), data.get("conversaId"));
+            case "PUSH_DIGITANDO" -> {
+                boolean digitando = Boolean.TRUE.equals(data.get("digitando"));
+                if (digitando) {
+                    System.out.printf("[PUSH] %s está digitando na conversa %s…%n",
+                        data.get("nome"), data.get("conversaId"));
+                } else {
+                    System.out.printf("[PUSH] %s parou de digitar na conversa %s.%n",
+                        data.get("nome"), data.get("conversaId"));
+                }
             }
             default -> System.out.println("[PUSH] " + action + ": " + msg.get("message"));
         }
     }
 
-    // ── Main de demonstração ──────────────────────────────────────────────────
-
     public static void main(String[] args) throws Exception {
         TcpClient client = new TcpClient();
         client.connect();
 
-        if (client.login("teste", "1234")) {
-            client.listarUsuarios();
+        if (client.login("a@a", "asasas")) {
+            client.listarConversas();
+            client.digitando(1);
+            Thread.sleep(1500);
             client.enviarMensagem(1, "Olá, equipe!");
-
+            client.pararDigitando(1);
             Thread.sleep(10_000);
         }
 

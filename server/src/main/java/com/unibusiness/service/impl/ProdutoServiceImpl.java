@@ -20,33 +20,29 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public ProdutoEntity create(ProdutoEntity produto) {
         EntityManager em = emf.createEntityManager();
-        try {
-            return new GenericRepository<>(ProdutoEntity.class, em).save(produto);
-        } finally { em.close(); }
+        try { return new GenericRepository<>(ProdutoEntity.class, em).save(produto); }
+        finally { em.close(); }
     }
 
     @Override
     public List<ProdutoEntity> listAll() {
         EntityManager em = emf.createEntityManager();
-        try {
-            return new GenericRepository<>(ProdutoEntity.class, em).findAll();
-        } finally { em.close(); }
+        try { return new GenericRepository<>(ProdutoEntity.class, em).findAll(); }
+        finally { em.close(); }
     }
 
     @Override
     public Optional<ProdutoEntity> findById(Integer id) {
         EntityManager em = emf.createEntityManager();
-        try {
-            return Optional.ofNullable(new GenericRepository<>(ProdutoEntity.class, em).findById(id));
-        } finally { em.close(); }
+        try { return Optional.ofNullable(new GenericRepository<>(ProdutoEntity.class, em).findById(id)); }
+        finally { em.close(); }
     }
 
     @Override
     public ProdutoEntity update(ProdutoEntity produto) {
         EntityManager em = emf.createEntityManager();
-        try {
-            return new GenericRepository<>(ProdutoEntity.class, em).save(produto);
-        } finally { em.close(); }
+        try { return new GenericRepository<>(ProdutoEntity.class, em).save(produto); }
+        finally { em.close(); }
     }
 
     @Override

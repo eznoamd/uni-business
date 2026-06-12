@@ -1,87 +1,30 @@
 package com.unibusiness.repository;
-
 import com.unibusiness.model.MensagemStatusEntity;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
-
 public class MensagemStatusRepository extends GenericRepository<MensagemStatusEntity> {
-
-    public MensagemStatusRepository(EntityManager em) {
-        super(MensagemStatusEntity.class, em);
-    }
-
-    /**
-     * Busca o status de uma mensagem específica para um usuário.
-     */
+    public MensagemStatusRepository(EntityManager em) { super(MensagemStatusEntity.class, em); }
     public Optional<MensagemStatusEntity> findByMensagemAndUsuario(Integer mensagemId, Integer usuarioId) {
-        TypedQuery<MensagemStatusEntity> q = em.createQuery(
-            "SELECT s FROM MensagemStatusEntity s " +
-            "WHERE s.mensagem.id = :mid AND s.usuario.id = :uid",
-            MensagemStatusEntity.class);
-        q.setParameter("mid", mensagemId);
-        q.setParameter("uid", usuarioId);
+        TypedQuery<MensagemStatusEntity> q = em.createQuery("SELECT s FROM MensagemStatusEntity s WHERE s.mensagem.id = :mid AND s.usuario.id = :uid", MensagemStatusEntity.class);
+        q.setParameter("mid", mensagemId); q.setParameter("uid", usuarioId);
         return q.getResultStream().findFirst();
     }
-
-    /**
-     * Lista todos os status não lidos de um usuário em uma conversa.
-     */
     public List<MensagemStatusEntity> findNaoLidasPorConversa(Integer usuarioId, Integer conversaId) {
-        return em.createQuery(
-            "SELECT s FROM MensagemStatusEntity s " +
-            "WHERE s.usuario.id = :uid " +
-            "AND s.mensagem.conversa.id = :cid " +
-            "AND s.lida = false " +
-            "ORDER BY s.mensagem.enviadoEm",
-            MensagemStatusEntity.class)
-            .setParameter("uid", usuarioId)
-            .setParameter("cid", conversaId)
-            .getResultList();
+        return em.createQuery("SELECT s FROM MensagemStatusEntity s WHERE s.usuario.id = :uid AND s.mensagem.conversa.id = :cid AND s.lida = false ORDER BY s.mensagem.enviadoEm", MensagemStatusEntity.class)
+            .setParameter("uid", usuarioId).setParameter("cid", conversaId).getResultList();
     }
-
-    /**
-     * Conta não lidas por conversa para um usuário.
-     * Retorna lista de Object[] { conversaId, count }.
-     */
     public List<Object[]> contarNaoLidasPorConversa(Integer usuarioId) {
-        return em.createQuery(
-            "SELECT s.mensagem.conversa.id, COUNT(s) " +
-            "FROM MensagemStatusEntity s " +
-            "WHERE s.usuario.id = :uid AND s.lida = false " +
-            "GROUP BY s.mensagem.conversa.id",
-            Object[].class)
-            .setParameter("uid", usuarioId)
-            .getResultList();
+        return em.createQuery("SELECT s.mensagem.conversa.id, COUNT(s) FROM MensagemStatusEntity s WHERE s.usuario.id = :uid AND s.lida = false GROUP BY s.mensagem.conversa.id", Object[].class)
+            .setParameter("uid", usuarioId).getResultList();
     }
-
-    /**
-     * Conta total de não lidas de um usuário (somando todas as conversas).
-     */
     public Long contarTotalNaoLidas(Integer usuarioId) {
-        return em.createQuery(
-            "SELECT COUNT(s) FROM MensagemStatusEntity s " +
-            "WHERE s.usuario.id = :uid AND s.lida = false",
-            Long.class)
-            .setParameter("uid", usuarioId)
-            .getSingleResult();
+        return em.createQuery("SELECT COUNT(s) FROM MensagemStatusEntity s WHERE s.usuario.id = :uid AND s.lida = false", Long.class)
+            .setParameter("uid", usuarioId).getSingleResult();
     }
-
-    /**
-     * Marca todas as mensagens de uma conversa como lidas para um usuário.
-     * Retorna a quantidade de registros atualizados.
-     */
     public int marcarConversaComoLida(Integer usuarioId, Integer conversaId) {
-        return em.createQuery(
-            "UPDATE MensagemStatusEntity s " +
-            "SET s.lida = true, s.lidaEm = CURRENT_TIMESTAMP " +
-            "WHERE s.usuario.id = :uid " +
-            "AND s.mensagem.conversa.id = :cid " +
-            "AND s.lida = false")
-            .setParameter("uid", usuarioId)
-            .setParameter("cid", conversaId)
-            .executeUpdate();
+        return em.createQuery("UPDATE MensagemStatusEntity s SET s.lida = true, s.lidaEm = CURRENT_TIMESTAMP WHERE s.usuario.id = :uid AND s.mensagem.conversa.id = :cid AND s.lida = false")
+            .setParameter("uid", usuarioId).setParameter("cid", conversaId).executeUpdate();
     }
 }

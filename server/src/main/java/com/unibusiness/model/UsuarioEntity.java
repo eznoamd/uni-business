@@ -29,38 +29,22 @@ public class UsuarioEntity {
     private LocalDateTime criadoEm = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "usuario_cargo",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "cargo_id")
-    )
+    @JoinTable(name = "usuario_cargo", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "cargo_id"))
     private Set<CargoEntity> cargos = new HashSet<>();
 
     @OneToMany(mappedBy = "criadoPor", cascade = CascadeType.REMOVE)
     private Set<TarefaEntity> tarefas = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tarefa_usuario",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "tarefa_id")
-    )
+    @JoinTable(name = "tarefa_usuario", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "tarefa_id"))
     private Set<TarefaEntity> tarefasAtribuidas = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "equipe_usuario",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "equipe_id")
-    )
+    @JoinTable(name = "equipe_usuario", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "equipe_id"))
     private Set<EquipeEntity> equipes = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "conversa_participantes",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "conversa_id")
-    )
+    @JoinTable(name = "conversa_participantes", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "conversa_id"))
     private Set<ConversaEntity> conversas = new HashSet<>();
 
     @OneToMany(mappedBy = "remetente", cascade = CascadeType.REMOVE)
@@ -78,7 +62,6 @@ public class UsuarioEntity {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
     private Set<LogSistemaEntity> logs = new HashSet<>();
 
-    // Construtores
     public UsuarioEntity() {}
 
     public UsuarioEntity(String nome, String email, String senhaHash) {
@@ -88,7 +71,6 @@ public class UsuarioEntity {
         this.ativo = true;
     }
 
-    // Getters e Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getNome() { return nome; }

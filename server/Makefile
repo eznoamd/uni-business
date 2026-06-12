@@ -1,33 +1,76 @@
-.PHONY: mvn-build docker-build docker-run db-run compose-up compose-down run-local clean
-
-# Build the project JAR using Maven
-mvn-build:
-	mvn clean package
-
-# Build Docker image for the app
-docker-build: mvn-build
-	docker build -t uni-business:latest .
-
-# Run the app image (uses .env for configuration)
-docker-run: docker-build
-	docker run --rm --env-file .env --name uni-business-app -p 8080:8080 --link unibusiness-db:db uni-business:latest
-
-# Run Postgres DB container (reads vars from .env)
-db-run:
-	docker run --rm --name unibusiness-db --env-file .env -p 5432:5432 -d postgres:15
-
-# Start app+db via docker-compose (recommended)
-compose-up:
-	docker compose up --build
-
-# Stop and remove compose resources
-compose-down:
-	docker compose down -v
-
-# Run the app locally from the built JAR
-run-local: mvn-build
-	java -jar target/uni-business-1.0-SNAPSHOT.jar
-
+.PHONY: build run stop restart logs clean rebuild dev test-presence test-sotimeout test-sotime
+ 
+# ── Configuração ──────────────────────────────────────────────────────────────
+ 
+JAR         := target/uni-business.jar
+SERVER_SRC  := src/main/java/com/unibusiness/network/ClientHandler.java
+ 
+# ── Build ─────────────────────────────────────────────────────────────────────
+ 
+# Compila o projeto Java (sem Docker)
+build:
+	mvn clean package -q
+	@echo "✓ Build concluído: $(JAR)"
+ 
+# Verifica se o ClientHandler tem setSoTimeout (sanity check)
+check:
+	@echo "=== Verificando ClientHandler compilado ==="
+	@grep -n "setSoTimeout\|SocketTimeoutException" $(SERVER_SRC) \
+		&& echo "✓ setSoTimeout encontrado no fonte" \
+		|| echo "✗ setSoTimeout NÃO encontrado no fonte"
+	@jar tf $(JAR) 2>/dev/null | grep ClientHandler \
+		&& echo "✓ ClientHandler.class presente no jar" \
+		|| echo "✗ jar não encontrado — rode: make build"
+ 
+# ── Docker ────────────────────────────────────────────────────────────────────
+ 
+# Sobe tudo do zero (força rebuild sem cache)
+run: build
+	docker compose down
+	docker compose build --no-cache
+	docker compose up -d
+	@echo "✓ Servidor rodando. Logs: make logs"
+ 
+# Para os containers
+stop:
+	docker compose down
+	@echo "✓ Containers parados"
+ 
+# Recompila Java + reconstrói imagem + reinicia (sem --no-cache — mais rápido)
+restart: build
+	docker compose down
+	docker compose build
+	docker compose up -d
+	@echo "✓ Reiniciado"
+ 
+# Rebuild completo: sem cache Maven nem Docker (use quando troca de arquivo não reflete)
+rebuild: clean
+	mvn package -q
+	docker compose down
+	docker compose build --no-cache
+	docker compose up -d
+	@echo "✓ Rebuild completo concluído"
+ 
+# Mostra logs em tempo real
+logs:
+	docker compose logs -f app
+ 
+# ── Dev local (sem Docker) ────────────────────────────────────────────────────
+ 
+# Roda o servidor direto na máquina (precisa de .env exportado ou banco local)
+dev: build
+	@echo "=== Iniciando servidor local (sem Docker) ==="
+	@set -a && . ./.env && set +a && java -jar $(JAR)
+ 
+# ── Limpeza ───────────────────────────────────────────────────────────────────
+ 
 clean:
-	mvn clean || true
-	docker rmi uni-business:latest || true
+	mvn clean -q
+	@echo "✓ target/ limpo"
+ 
+# Derruba containers E apaga volume do banco (reset total)
+clean-all:
+	docker compose down -v
+	mvn clean -q
+	@echo "✓ Containers, volumes e target/ limpos"
+ 

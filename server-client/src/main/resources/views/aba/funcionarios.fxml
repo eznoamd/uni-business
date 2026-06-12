@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.unibusiness.controller.aba.FuncionariosController"
+            stylesheets="@../../style/sidebar.css">
+    <center>
+        <StackPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll">
+                <content>
+                    <VBox spacing="20" styleClass="content">
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox HBox.hgrow="ALWAYS" spacing="2">
+                                <Label text="Funcionários" styleClass="page-title"/>
+                                <Label text="Usuários cadastrados no sistema" styleClass="page-subtitle"/>
+                            </VBox>
+                            <Button text="↻ Atualizar" onAction="#recarregar" styleClass="btn-ghost"/>
+                            <Button text="+ Novo Funcionário" onAction="#abrirFormNovo" styleClass="btn-primary"/>
+                        </HBox>
+
+                        <HBox spacing="14">
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Total de usuários" styleClass="kpi-label"/>
+                                <Label fx:id="lblTotal" text="—" styleClass="kpi-value"/>
+                            </VBox>
+                            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="6">
+                                <Label text="Usuários ativos" styleClass="kpi-label"/>
+                                <Label fx:id="lblAtivos" text="—" styleClass="kpi-value"/>
+                                <Label text="contas ativas" styleClass="kpi-trend-up"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="section" spacing="14">
+                            <TextField fx:id="buscaField"
+                                       promptText="🔍  Buscar por nome ou e-mail..."
+                                       styleClass="input" prefWidth="320"/>
+
+                            <TableView fx:id="tabela" prefHeight="420">
+                                <columns>
+                                    <TableColumn fx:id="colId"    text="#"        prefWidth="60"/>
+                                    <TableColumn fx:id="colNome"  text="Nome"     prefWidth="220"/>
+                                    <TableColumn fx:id="colEmail" text="E-mail"   prefWidth="260"/>
+                                    <TableColumn fx:id="colAtivo" text="Status"   prefWidth="100"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Form overlay -->
+            <StackPane fx:id="formOverlay" visible="false" managed="false"
+                       style="-fx-background-color: rgba(15,23,42,0.4);" alignment="CENTER">
+                <VBox styleClass="section" maxWidth="420" spacing="16">
+                    <Label text="Novo Funcionário" styleClass="section-title"/>
+                    <VBox spacing="6">
+                        <Label text="Nome *" styleClass="field-label"/>
+                        <TextField fx:id="fNome" promptText="Nome completo" styleClass="input"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="E-mail *" styleClass="field-label"/>
+                        <TextField fx:id="fEmail" promptText="email@empresa.com" styleClass="input"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Senha *" styleClass="field-label"/>
+                        <PasswordField fx:id="fSenha" promptText="Senha de acesso" styleClass="input"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Cargo" styleClass="field-label"/>
+                        <ComboBox fx:id="fCargo" maxWidth="Infinity" styleClass="combo-box"/>
+                    </VBox>
+                    <CheckBox fx:id="fAtivo" text="Ativo" selected="true"/>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Cancelar" onAction="#fecharForm" styleClass="btn-ghost"/>
+                        <Button text="Salvar" onAction="#salvar" styleClass="btn-primary"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+
+            <StackPane fx:id="loadingOverlay" visible="false" managed="false"
+                       styleClass="loading-overlay" alignment="CENTER">
+                <StackPane fx:id="customSpinner" styleClass="custom-spinner"/>
+            </StackPane>
+        </StackPane>
+    </center>
+</BorderPane>

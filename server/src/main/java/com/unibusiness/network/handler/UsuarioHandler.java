@@ -37,7 +37,6 @@ public class UsuarioHandler implements ActionHandler {
         if (nome == null || email == null || senha == null)
             return Response.error(Actions.USUARIO_CREATE, "Campos 'nome', 'email' e 'senha' obrigatórios.");
 
-        // FIX (segurança): senha é hasheada antes de persistir
         String senhaHash = PasswordUtil.hashPassword(senha);
         UsuarioEntity saved = service.create(new UsuarioEntity(nome, email, senhaHash));
         return Response.ok(Actions.USUARIO_CREATE, toMap(saved));

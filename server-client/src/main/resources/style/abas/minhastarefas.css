@@ -1,0 +1,15 @@
+/* ==========================================================
+   Estados das tarefas
+   ========================================================== */
+
+.task-green {
+    -fx-background-color: #d1fae5;
+}
+
+.task-yellow {
+    -fx-background-color: #fef3c7;
+}
+
+.task-red {
+    -fx-background-color: #fee2e2;
+}

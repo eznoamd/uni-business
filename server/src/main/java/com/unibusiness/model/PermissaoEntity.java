@@ -1,31 +1,15 @@
 package com.unibusiness.model;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 @Table(name = "permissoes")
 public class PermissaoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false, unique = true)
-    private String nome;
-
-    @ManyToMany(mappedBy = "permissoes", fetch = FetchType.LAZY)
-    private Set<CargoEntity> cargos = new HashSet<>();
-
-    // Construtores
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+    @Column(nullable = false, unique = true) private String nome;
+    @ManyToMany(mappedBy = "permissoes", fetch = FetchType.LAZY) private Set<CargoEntity> cargos = new HashSet<>();
     public PermissaoEntity() {}
-
-    public PermissaoEntity(String nome) {
-        this.nome = nome;
-    }
-
-    // Getters e Setters
+    public PermissaoEntity(String nome) { this.nome = nome; }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getNome() { return nome; }
